@@ -404,7 +404,10 @@ const App: React.FC = () => {
           <div className="flex-1 space-y-10">
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
               <div className="glass-panel p-8 rounded-[2.5rem] space-y-6">
-                <h3 className="text-lg font-bold uppercase tracking-widest opacity-50 text-center">Kitap Hakkında</h3>
+                <div className="text-center space-y-1">
+                  <h3 className="text-xl md:text-2xl font-black">{book.title}</h3>
+                  <span className="text-sm font-bold opacity-60 block">{book.author}</span>
+                </div>
                 <p className="leading-relaxed opacity-80 whitespace-pre-line text-sm md:text-base text-center">{book.description || "Açıklama yok."}</p>
                 {/* Butonlar */}
                 <div className="flex flex-wrap justify-center gap-4 pt-4 border-t border-white/10">
