@@ -1,0 +1,7 @@
+{
+  "name": "SesliKitap - Premium Audiobook Platform",
+  "description": "A high-end audiobook platform featuring glassmorphism design, dark/light mode, and AI-powered book recommendations using Gemini.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}

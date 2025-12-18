@@ -1,0 +1,115 @@
+
+<!DOCTYPE html>
+<html lang="tr" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SesliKitap - Premium Audiobook Platform</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Spline+Sans:wght@300;400;500;600;700&family=Noto+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Material Symbols -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0ea5e9",
+                        "bg-light": "#f8fafc",
+                        "bg-dark": "#0f172a",
+                        "bg-cream": "#fdf6e3",
+                        "bg-green": "#f0fdf4",
+                        "bg-blue": "#f0f9ff",
+                        "glass-border": "rgba(255, 255, 255, 0.08)",
+                    },
+                    fontFamily: {
+                        "display": ["Spline Sans", "sans-serif"],
+                        "body": ["Noto Sans", "sans-serif"],
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1rem", "3xl": "1.5rem", "4xl": "2.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+    <style>
+        body { transition: background-color 0.4s ease, color 0.4s ease; }
+        
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(14, 165, 233, 0.2); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(14, 165, 233, 0.5); }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+
+        .glass-panel {
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-width: 1px;
+            transition: background-color 0.3s ease, border-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+        }
+
+        .dark .glass-panel { 
+            background: rgba(15, 23, 42, 0.6); 
+            border-color: rgba(255, 255, 255, 0.05);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2); 
+        }
+        .light .glass-panel { 
+            background: rgba(248, 250, 252, 0.75); 
+            border-color: rgba(14, 165, 233, 0.1); 
+            box-shadow: 0 4px 30px rgba(14, 165, 233, 0.05); 
+        }
+        .cream .glass-panel { 
+            background: rgba(253, 246, 227, 0.75); 
+            border-color: rgba(139, 69, 19, 0.15); 
+            box-shadow: 0 4px 30px rgba(139, 69, 19, 0.05); 
+        }
+        .green .glass-panel { 
+            background: rgba(240, 253, 244, 0.75); 
+            border-color: rgba(21, 128, 61, 0.15); 
+            box-shadow: 0 4px 30px rgba(21, 128, 61, 0.05); 
+        }
+        .blue .glass-panel { 
+            background: rgba(224, 242, 254, 0.7); 
+            border-color: rgba(14, 165, 233, 0.15); 
+            box-shadow: 0 4px 30px rgba(14, 165, 233, 0.05); 
+        }
+
+        .cream { background-color: #fdf6e3; color: #5c4033; }
+        .cream .text-slate-900, .cream .dark\:text-white { color: #5c4033 !important; }
+        .cream .text-slate-500, .cream .dark\:text-gray-400 { color: #8b7355 !important; }
+
+        .green { background-color: #f0fdf4; color: #064e3b; }
+        .green .text-slate-900, .green .dark\:text-white { color: #064e3b !important; }
+
+        .blue { background-color: #f0f9ff; color: #0c4a6e; }
+        .blue .text-slate-900, .blue .dark\:text-white { color: #0c4a6e !important; }
+        .blue .text-slate-500, .blue .dark\:text-gray-400 { color: #0369a1 !important; }
+        .blue .glass-panel input::placeholder { color: rgba(3, 105, 161, 0.5); }
+        
+        @keyframes fade-in {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in { animation: fade-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .fill-1 { font-variation-settings: 'FILL' 1; }
+        *:focus { outline: none !important; }
+    </style>
+<script type="importmap">
+{
+  "imports": {
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "react": "https://esm.sh/react@^19.2.3",
+    "@google/genai": "https://esm.sh/@google/genai@^1.34.0",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/"
+  }
+}
+</script>
+</head>
+<body class="bg-bg-light dark:bg-bg-dark cream:bg-bg-cream green:bg-bg-green blue:bg-bg-blue text-slate-900 dark:text-white font-display selection:bg-primary/30 overflow-hidden">
+    <div id="root"></div>
+</body>
+</html>
