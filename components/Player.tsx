@@ -117,13 +117,13 @@ const Player: React.FC<PlayerProps> = ({ state, onTogglePlay, onProgressUpdate, 
         </div>
 
         {/* Cover & Info */}
-        <div className="flex-1 flex flex-col items-center justify-center px-4 gap-3 min-h-0 overflow-hidden">
+        <div className="flex-1 flex items-center justify-center px-4 gap-4 min-h-0 overflow-hidden">
           <div
-            className={`w-40 h-60 max-w-[40vw] max-h-[25vh] rounded-2xl bg-cover bg-center shadow-2xl border-2 border-white/10 shrink-0 ${state.isPlaying ? 'animate-pulse' : ''}`}
+            className={`w-24 h-36 rounded-xl bg-cover bg-center shadow-2xl border-2 border-white/10 shrink-0 ${state.isPlaying ? 'animate-pulse' : ''}`}
             style={{ backgroundImage: `url(${state.currentBook.coverUrl})` }}
           />
-          <div className="text-center space-y-1 max-w-full px-2 overflow-y-auto max-h-[15vh] shrink-0">
-            <h2 className="text-lg font-black text-white leading-snug break-words">{currentTopic?.title || state.currentBook.title}</h2>
+          <div className="flex flex-col justify-center space-y-1 min-w-0 flex-1 max-h-[40vh] overflow-y-auto">
+            <h2 className="text-base font-black text-white leading-snug break-words">{currentTopic?.title || state.currentBook.title}</h2>
             <p className="text-sm text-gray-400 break-words">{state.currentBook.author}</p>
             <p className="text-xs text-primary font-bold">
               Bölüm {state.currentTopicIndex + 1} / {topics.length}
