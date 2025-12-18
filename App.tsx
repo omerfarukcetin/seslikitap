@@ -356,6 +356,7 @@ const App: React.FC = () => {
                 <input className="glass-panel p-3 rounded-xl outline-none" placeholder="Yazar" value={editingBook.author} onChange={e => setEditingBook({ ...editingBook, author: e.target.value })} />
                 <input className="glass-panel p-3 rounded-xl outline-none" placeholder="Kapak URL" value={editingBook.coverUrl} onChange={e => setEditingBook({ ...editingBook, coverUrl: e.target.value })} />
                 <input className="glass-panel p-3 rounded-xl outline-none" placeholder="Satın Alma URL (opsiyonel)" value={editingBook.buyUrl || ''} onChange={e => setEditingBook({ ...editingBook, buyUrl: e.target.value })} />
+                <input className="glass-panel p-3 rounded-xl outline-none" placeholder="PDF Adresi (opsiyonel)" value={editingBook.pdfUrl || ''} onChange={e => setEditingBook({ ...editingBook, pdfUrl: e.target.value })} />
                 <textarea className="glass-panel p-3 rounded-xl outline-none md:col-span-2 h-20" placeholder="Açıklama" value={editingBook.description} onChange={e => setEditingBook({ ...editingBook, description: e.target.value })} />
                 <div className="md:col-span-2">
                   <label className="text-xs font-bold opacity-50 mb-1 block">Bölümler (JSON)</label>
@@ -412,9 +413,18 @@ const App: React.FC = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={(e) => { if (!book.buyUrl) e.preventDefault(); }}
-                  className={`px-8 py-4 rounded-full font-bold flex items-center gap-2 transition-all ${book.buyUrl ? 'bg-green-500 text-white shadow-xl active:scale-95' : 'bg-gray-300 text-gray-500 cursor-not-allowed'}`}
+                  className={`px-6 py-4 rounded-full font-bold flex items-center gap-2 transition-all ${book.buyUrl ? 'bg-green-500 text-white shadow-xl active:scale-95' : 'bg-gray-300 text-gray-500 cursor-not-allowed'}`}
                 >
                   <span className="material-symbols-outlined">shopping_cart</span> Satın Al
+                </a>
+                <a
+                  href={book.pdfUrl || '#'}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => { if (!book.pdfUrl) e.preventDefault(); }}
+                  className={`px-6 py-4 rounded-full font-bold flex items-center gap-2 transition-all ${book.pdfUrl ? 'bg-orange-500 text-white shadow-xl active:scale-95' : 'bg-gray-300 text-gray-500 cursor-not-allowed'}`}
+                >
+                  <span className="material-symbols-outlined">menu_book</span> PDF Oku
                 </a>
                 <button onClick={() => {
                   if (!currentUser) { setShowAuthModal(true); return; }
