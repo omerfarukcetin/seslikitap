@@ -533,7 +533,7 @@ const App: React.FC = () => {
 
       <main className="flex-1 overflow-y-auto no-scrollbar">
         {isAdminPanel ? renderAdmin() : selectedBook ? renderDetail(selectedBook) : (
-          <div className="px-4 md:px-12 py-6 space-y-10 pb-40 max-w-[1800px] mx-auto animate-fade-in">
+          <div className="px-4 md:px-12 py-6 space-y-10 pb-52 max-w-[1800px] mx-auto animate-fade-in">
             <div className="flex items-baseline gap-4">
               <h2 className="text-2xl md:text-5xl font-black tracking-tight">{searchQuery ? 'Arama Sonuçları' : 'Tüm Kitaplar'}</h2>
               <span className="opacity-40 font-bold text-sm md:text-lg">({filteredBooks.length})</span>
