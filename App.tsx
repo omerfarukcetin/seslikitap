@@ -218,9 +218,10 @@ const App: React.FC = () => {
   };
 
   const handlePlayBook = (book: Book, topicIndex: number = 0) => {
+    // Eğer topicIndex verilmişse onu kullan, yoksa kayıtlı progress'i kontrol et
     const saved = userData.progress[book.id];
-    const index = (saved && book.id === selectedBook?.id) ? saved.topicIndex : topicIndex;
-    const percent = (saved && book.id === selectedBook?.id) ? saved.percent : 0;
+    const index = topicIndex > 0 ? topicIndex : (saved?.topicIndex || 0);
+    const percent = topicIndex > 0 ? 0 : (saved?.percent || 0);
 
     setPlayerState({
       currentBook: book,
