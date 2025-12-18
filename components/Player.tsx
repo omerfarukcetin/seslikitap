@@ -173,18 +173,25 @@ const Player: React.FC<PlayerProps> = ({ state, onTogglePlay, onProgressUpdate, 
             <div className="size-9" /> {/* Spacer */}
           </div>
 
-          {/* Cover & Info - Mobilde yan yana, Web'de dikey */}
-          <div className="flex items-center gap-4 md:flex-col md:items-start md:flex-1 md:justify-center">
+
+          {/* Cover & Info - Mobilde yan yana, Web'de ortada resim + altında açıklama */}
+          <div className="flex items-center gap-4 md:flex-col md:items-center md:flex-1 md:justify-center">
             <div
-              className="w-20 h-28 md:w-64 md:h-96 rounded-xl md:rounded-2xl bg-cover bg-center shadow-xl md:shadow-2xl border-2 md:border-4 border-slate-200 dark:border-white/10 shrink-0 md:mb-6"
+              className="w-20 h-28 md:w-48 md:h-72 rounded-xl md:rounded-2xl bg-cover bg-center shadow-xl md:shadow-2xl border-2 md:border-4 border-slate-200 dark:border-white/10 shrink-0"
               style={{ backgroundImage: `url(${state.currentBook.coverUrl})` }}
             />
-            <div className="flex-1 md:text-left space-y-1 md:space-y-2 min-w-0">
-              <h2 className="text-sm md:text-2xl font-black leading-snug break-words line-clamp-2">{currentTopic?.title || state.currentBook.title}</h2>
+            <div className="flex-1 md:text-center space-y-1 md:space-y-3 min-w-0 md:mt-4">
+              <h2 className="text-sm md:text-xl font-black leading-snug break-words line-clamp-2">{currentTopic?.title || state.currentBook.title}</h2>
               <p className="text-xs md:text-sm opacity-70">{state.currentBook.author}</p>
               <p className="text-[10px] md:text-xs text-primary font-bold">
                 Bölüm {state.currentTopicIndex + 1} / {topics.length}
               </p>
+              {/* Kitap açıklaması - sadece web */}
+              {state.currentBook.description && (
+                <p className="hidden md:block text-xs opacity-60 leading-relaxed max-h-24 overflow-y-auto mt-4 text-left px-2">
+                  {state.currentBook.description}
+                </p>
+              )}
             </div>
           </div>
 
