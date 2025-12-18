@@ -119,7 +119,7 @@ const Player: React.FC<PlayerProps> = ({ state, onTogglePlay, onProgressUpdate, 
         {/* Cover & Info */}
         <div className="flex-1 flex items-center justify-center px-4 gap-4 min-h-0 overflow-hidden">
           <div
-            className={`w-24 h-36 rounded-xl bg-cover bg-center shadow-2xl border-2 border-white/10 shrink-0 ${state.isPlaying ? 'animate-pulse' : ''}`}
+            className="w-24 h-36 rounded-xl bg-cover bg-center shadow-2xl border-2 border-white/10 shrink-0"
             style={{ backgroundImage: `url(${state.currentBook.coverUrl})` }}
           />
           <div className="flex flex-col justify-center space-y-1 min-w-0 flex-1 max-h-[40vh] overflow-y-auto">
@@ -132,7 +132,7 @@ const Player: React.FC<PlayerProps> = ({ state, onTogglePlay, onProgressUpdate, 
         </div>
 
         {/* Controls */}
-        <div className="px-8 pb-4 space-y-4 shrink-0">
+        <div className="px-6 pb-4 space-y-4 shrink-0">
           {/* Progress */}
           <div>
             <div
@@ -153,46 +153,44 @@ const Player: React.FC<PlayerProps> = ({ state, onTogglePlay, onProgressUpdate, 
             </div>
           </div>
 
-          {/* Playback Controls */}
-          <div className="flex items-center justify-center gap-8">
+          {/* Playback Controls with Speed */}
+          <div className="flex items-center justify-center gap-3">
             <button onClick={onPrev} className="text-white/60 active:text-primary transition-colors">
-              <span className="material-symbols-outlined text-4xl">skip_previous</span>
+              <span className="material-symbols-outlined text-3xl">skip_previous</span>
             </button>
             <button
               onClick={onTogglePlay}
-              className="size-16 rounded-full bg-primary flex items-center justify-center text-white shadow-xl active:scale-90 transition-transform"
+              className="size-14 rounded-full bg-primary flex items-center justify-center text-white shadow-xl active:scale-90 transition-transform"
             >
-              <span className="material-symbols-outlined text-4xl fill-1">
+              <span className="material-symbols-outlined text-3xl fill-1">
                 {state.isPlaying ? 'pause' : 'play_arrow'}
               </span>
             </button>
             <button onClick={onNext} className="text-white/60 active:text-primary transition-colors">
-              <span className="material-symbols-outlined text-4xl">skip_next</span>
+              <span className="material-symbols-outlined text-3xl">skip_next</span>
             </button>
-          </div>
-
-          {/* Speed Control */}
-          <div className="flex justify-center">
-            <button
-              onClick={() => setShowSpeedMenu(!showSpeedMenu)}
-              className="px-4 py-2 rounded-full bg-white/10 text-white text-sm font-bold"
-            >
-              {state.playbackSpeed}x Hız
-            </button>
-          </div>
-          {showSpeedMenu && (
-            <div className="flex justify-center gap-2 flex-wrap">
-              {speeds.map(s => (
-                <button
-                  key={s}
-                  onClick={() => { onSpeedChange(s); setShowSpeedMenu(false); }}
-                  className={`px-3 py-1.5 rounded-full text-xs font-bold transition-colors ${state.playbackSpeed === s ? 'bg-primary text-white' : 'bg-white/10 text-white/70'}`}
-                >
-                  {s}x
-                </button>
-              ))}
+            <div className="relative">
+              <button
+                onClick={() => setShowSpeedMenu(!showSpeedMenu)}
+                className="px-3 py-2 rounded-full bg-white/10 text-white text-sm font-bold"
+              >
+                {state.playbackSpeed}x
+              </button>
+              {showSpeedMenu && (
+                <div className="absolute bottom-full mb-2 right-0 bg-slate-800 rounded-xl p-2 shadow-2xl border border-white/10 flex flex-col gap-1 z-[110]">
+                  {speeds.map(s => (
+                    <button
+                      key={s}
+                      onClick={() => { onSpeedChange(s); setShowSpeedMenu(false); }}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${state.playbackSpeed === s ? 'bg-primary text-white' : 'bg-white/10 text-white/70'}`}
+                    >
+                      {s}x
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
-          )}
+          </div>
         </div>
 
         {/* Topics List */}
@@ -242,7 +240,7 @@ const Player: React.FC<PlayerProps> = ({ state, onTogglePlay, onProgressUpdate, 
         onClick={() => window.innerWidth < 768 && setIsFullscreen(true)}
       >
         <div
-          className={`size-10 md:size-16 rounded-full bg-cover bg-center shrink-0 border-2 border-primary/40 shadow-xl ${state.isPlaying ? 'animate-spin-slow' : ''}`}
+          className="size-10 md:size-16 rounded-full bg-cover bg-center shrink-0 border-2 border-primary/40 shadow-xl"
           style={{ backgroundImage: `url(${state.currentBook.coverUrl})` }}
         />
         <div className="flex flex-col min-w-0 overflow-hidden flex-1">
