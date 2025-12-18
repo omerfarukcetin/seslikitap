@@ -103,6 +103,16 @@ const Player: React.FC<PlayerProps> = ({ state, onTogglePlay, onProgressUpdate, 
   const speeds = [1, 1.25, 1.5, 1.75, 2, 2.25, 2.5];
   const topics = state.currentBook.topics || [];
 
+  // Progress bar sürükleme fonksiyonu
+  const handleSeek = (e: React.MouseEvent | React.TouchEvent, element: HTMLElement) => {
+    const rect = element.getBoundingClientRect();
+    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+    const percent = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+    if (audioRef.current && audioRef.current.duration) {
+      audioRef.current.currentTime = percent * audioRef.current.duration;
+    }
+  };
+
   // Tam Ekran Mobil Player
   if (isFullscreen) {
     return (
@@ -115,7 +125,7 @@ const Player: React.FC<PlayerProps> = ({ state, onTogglePlay, onProgressUpdate, 
         />
 
         {/* Header */}
-        <div className="flex items-center justify-between p-4 shrink-0">
+        <div className="flex items-center justify-between p-3 shrink-0">
           <button
             onClick={() => setIsFullscreen(false)}
             className="size-10 rounded-full bg-white/10 flex items-center justify-center"
@@ -126,49 +136,60 @@ const Player: React.FC<PlayerProps> = ({ state, onTogglePlay, onProgressUpdate, 
           <div className="size-10" /> {/* Spacer */}
         </div>
 
-        {/* Cover & Info */}
-        <div className="flex-1 flex items-center justify-center px-4 gap-4 min-h-0 overflow-hidden">
+        {/* Cover & Info - Daha kompakt */}
+        <div className="flex items-center px-4 gap-4 shrink-0">
           <div
-            className="w-24 h-36 rounded-xl bg-cover bg-center shadow-2xl border-2 border-white/10 shrink-0"
+            className="w-16 h-24 rounded-lg bg-cover bg-center shadow-xl border-2 border-white/10 shrink-0"
             style={{ backgroundImage: `url(${state.currentBook.coverUrl})` }}
           />
-          <div className="flex flex-col justify-center space-y-1 min-w-0 flex-1 max-h-[40vh] overflow-y-auto">
-            <h2 className="text-base font-black text-white leading-snug break-words">{currentTopic?.title || state.currentBook.title}</h2>
-            <p className="text-sm text-gray-400 break-words">{state.currentBook.author}</p>
-            <p className="text-xs text-primary font-bold">
+          <div className="flex flex-col justify-center space-y-0.5 min-w-0 flex-1">
+            <h2 className="text-sm font-black text-white leading-snug break-words line-clamp-2">{currentTopic?.title || state.currentBook.title}</h2>
+            <p className="text-xs text-gray-400">{state.currentBook.author}</p>
+            <p className="text-[10px] text-primary font-bold">
               Bölüm {state.currentTopicIndex + 1} / {topics.length}
             </p>
           </div>
         </div>
 
-        {/* Controls */}
-        <div className="px-6 pb-4 space-y-4 shrink-0">
-          {/* Progress */}
+        {/* Controls - Daha yakın */}
+        <div className="px-4 py-3 space-y-3 shrink-0">
+          {/* Progress with Drag */}
           <div>
             <div
-              className="h-2 w-full bg-white/10 rounded-full cursor-pointer relative"
-              onClick={(e) => {
-                const rect = e.currentTarget.getBoundingClientRect();
-                const percent = (e.clientX - rect.left) / rect.width;
-                if (audioRef.current && audioRef.current.duration) {
-                  audioRef.current.currentTime = percent * audioRef.current.duration;
-                }
+              className="h-3 w-full bg-white/10 rounded-full cursor-pointer relative touch-none"
+              onClick={(e) => handleSeek(e, e.currentTarget)}
+              onTouchMove={(e) => handleSeek(e, e.currentTarget)}
+              onMouseDown={(e) => {
+                const bar = e.currentTarget;
+                const onMove = (ev: MouseEvent) => {
+                  const rect = bar.getBoundingClientRect();
+                  const percent = Math.max(0, Math.min(1, (ev.clientX - rect.left) / rect.width));
+                  if (audioRef.current && audioRef.current.duration) {
+                    audioRef.current.currentTime = percent * audioRef.current.duration;
+                  }
+                };
+                const onUp = () => {
+                  document.removeEventListener('mousemove', onMove);
+                  document.removeEventListener('mouseup', onUp);
+                };
+                document.addEventListener('mousemove', onMove);
+                document.addEventListener('mouseup', onUp);
               }}
             >
               <div className="h-full bg-primary rounded-full" style={{ width: `${state.progress}%` }}></div>
               <div
-                className="absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-white rounded-full shadow-lg border-2 border-primary"
-                style={{ left: `calc(${state.progress}% - 8px)` }}
+                className="absolute top-1/2 -translate-y-1/2 w-5 h-5 bg-white rounded-full shadow-lg border-2 border-primary"
+                style={{ left: `calc(${state.progress}% - 10px)` }}
               ></div>
             </div>
-            <div className="flex justify-between text-xs font-mono text-gray-400 mt-2">
+            <div className="flex justify-between text-xs font-mono text-gray-400 mt-1">
               <span>{state.currentTime}</span>
               <span>{state.totalDuration}</span>
             </div>
           </div>
 
           {/* Playback Controls with Speed */}
-          <div className="flex items-center justify-center gap-3">
+          <div className="flex items-center justify-center gap-4">
             <button onClick={onPrev} className="text-white/60 active:text-primary transition-colors">
               <span className="material-symbols-outlined text-3xl">skip_previous</span>
             </button>
@@ -207,22 +228,22 @@ const Player: React.FC<PlayerProps> = ({ state, onTogglePlay, onProgressUpdate, 
           </div>
         </div>
 
-        {/* Topics List */}
+        {/* Topics List - Daha geniş */}
         {topics.length > 0 && (
-          <div className="bg-black/40 border-t border-white/10 max-h-[35vh] overflow-y-auto no-scrollbar">
-            <div className="p-4">
-              <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Bölümler ({topics.length})</h3>
-              <div className="space-y-2">
+          <div className="flex-1 bg-black/40 border-t border-white/10 overflow-y-auto no-scrollbar">
+            <div className="p-3">
+              <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Bölümler ({topics.length})</h3>
+              <div className="space-y-1.5">
                 {topics.map((t, i) => {
                   const active = state.currentTopicIndex === i;
                   return (
                     <button
                       key={t.id}
                       onClick={() => handleTopicClick(i)}
-                      className={`w-full p-3 rounded-xl flex justify-between items-center text-left transition-colors ${active ? 'bg-primary text-white' : 'bg-white/5 text-white/70 active:bg-white/10'}`}
+                      className={`w-full p-2.5 rounded-lg flex justify-between items-center text-left transition-colors ${active ? 'bg-primary text-white' : 'bg-white/5 text-white/70 active:bg-white/10'}`}
                     >
                       <span className="truncate text-sm font-medium">{t.title}</span>
-                      <span className="material-symbols-outlined text-xl shrink-0 ml-2">
+                      <span className="material-symbols-outlined text-lg shrink-0 ml-2">
                         {active && state.isPlaying ? 'pause' : 'play_circle'}
                       </span>
                     </button>
