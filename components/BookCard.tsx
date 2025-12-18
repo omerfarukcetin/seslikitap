@@ -7,17 +7,15 @@ interface BookCardProps {
   matchedTopics?: Topic[];
   onClick: (book: Book) => void;
   onPlay: (book: Book) => void;
+  onResume?: (book: Book) => void;
   isFavorite: boolean;
   onToggleFavorite: () => void;
   progress?: { topicIndex: number; percent: number };
 }
 
-const BookCard: React.FC<BookCardProps> = ({ book, matchedTopics = [], onClick, onPlay, isFavorite, onToggleFavorite, progress }) => {
+const BookCard: React.FC<BookCardProps> = ({ book, matchedTopics = [], onClick, onPlay, onResume, isFavorite, onToggleFavorite, progress }) => {
   const hasProgress = progress && (progress.topicIndex > 0 || progress.percent > 0);
-  const totalTopics = book.topics?.length || 1;
-  const overallProgress = hasProgress
-    ? ((progress.topicIndex / totalTopics) * 100) + ((progress.percent / totalTopics))
-    : 0;
+  const currentTopic = hasProgress && book.topics ? book.topics[progress.topicIndex] : null;
 
   return (
     <div
@@ -32,12 +30,15 @@ const BookCard: React.FC<BookCardProps> = ({ book, matchedTopics = [], onClick, 
         <span className={`material-symbols-outlined text-[16px] md:text-[20px] ${isFavorite ? 'fill-1' : ''}`}>favorite</span>
       </button>
 
-      {/* "Devam Et" rozeti */}
-      {hasProgress && (
-        <div className="absolute top-3 left-3 md:top-6 md:left-6 z-20 px-2 py-1 rounded-lg bg-primary text-white text-[9px] md:text-[11px] font-bold flex items-center gap-1 shadow-lg">
+      {/* "Devam Et" rozeti - tıklanabilir */}
+      {hasProgress && onResume && (
+        <button
+          onClick={(e) => { e.stopPropagation(); onResume(book); }}
+          className="absolute top-3 left-3 md:top-6 md:left-6 z-20 px-2 py-1 rounded-lg bg-primary text-white text-[9px] md:text-[11px] font-bold flex items-center gap-1 shadow-lg hover:bg-primary/80 active:scale-95 transition-all"
+        >
           <span className="material-symbols-outlined text-[12px] md:text-[14px]">play_circle</span>
           Devam Et
-        </div>
+        </button>
       )}
 
       <div className="relative w-full aspect-[1/1.5] rounded-xl md:rounded-[32px] overflow-hidden shadow-lg bg-slate-200 dark:bg-slate-800">
@@ -54,13 +55,6 @@ const BookCard: React.FC<BookCardProps> = ({ book, matchedTopics = [], onClick, 
             <span className="material-symbols-outlined text-xl md:text-4xl">play_arrow</span>
           </button>
         </div>
-
-        {/* İlerleme çubuğu */}
-        {hasProgress && (
-          <div className="absolute bottom-0 left-0 right-0 h-1 bg-black/50">
-            <div className="h-full bg-primary" style={{ width: `${Math.min(100, overallProgress)}%` }}></div>
-          </div>
-        )}
       </div>
 
       <div className="space-y-1 md:space-y-2 px-1 md:px-2 pb-1 md:pb-2">
@@ -72,11 +66,15 @@ const BookCard: React.FC<BookCardProps> = ({ book, matchedTopics = [], onClick, 
           <span className="text-[10px] md:text-[12px] font-bold text-primary shrink-0">{book.duration?.split(' ')[0] || ''}s</span>
         </div>
 
-        {/* İlerleme bilgisi */}
-        {hasProgress && (
-          <div className="text-[9px] md:text-[10px] text-primary font-medium">
-            Bölüm {progress.topicIndex + 1}/{totalTopics} • %{Math.round(progress.percent)}
-          </div>
+        {/* Kaldığı bölüm bilgisi */}
+        {hasProgress && currentTopic && (
+          <button
+            onClick={(e) => { e.stopPropagation(); onResume?.(book); }}
+            className="w-full text-left text-[9px] md:text-[10px] text-primary font-medium bg-primary/10 rounded-lg px-2 py-1.5 hover:bg-primary/20 transition-colors flex items-center gap-1"
+          >
+            <span className="material-symbols-outlined text-[12px]">play_arrow</span>
+            <span className="truncate">{currentTopic.title}</span>
+          </button>
         )}
 
         {/* Eşleşen Konular (Arama sırasında görünür) */}

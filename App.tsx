@@ -525,6 +525,14 @@ const App: React.FC = () => {
                   book={b}
                   onClick={setSelectedBook}
                   onPlay={() => handlePlayBook(b)}
+                  onResume={() => {
+                    const saved = userData.progress[b.id];
+                    if (saved) {
+                      handlePlayBook(b, saved.topicIndex);
+                    } else {
+                      handlePlayBook(b);
+                    }
+                  }}
                   isFavorite={userData.favorites.includes(b.id)}
                   onToggleFavorite={() => {
                     if (!currentUser) { setShowAuthModal(true); return; }
