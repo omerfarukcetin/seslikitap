@@ -117,14 +117,14 @@ const Player: React.FC<PlayerProps> = ({ state, onTogglePlay, onProgressUpdate, 
         </div>
 
         {/* Cover & Info */}
-        <div className="flex-1 flex flex-col items-center justify-center px-8 gap-4 min-h-0 overflow-hidden">
+        <div className="flex-1 flex flex-col items-center justify-center px-4 gap-3 min-h-0 overflow-hidden">
           <div
-            className={`w-40 h-60 max-w-[40vw] max-h-[30vh] rounded-2xl bg-cover bg-center shadow-2xl border-2 border-white/10 shrink-0 ${state.isPlaying ? 'animate-pulse' : ''}`}
+            className={`w-40 h-60 max-w-[40vw] max-h-[25vh] rounded-2xl bg-cover bg-center shadow-2xl border-2 border-white/10 shrink-0 ${state.isPlaying ? 'animate-pulse' : ''}`}
             style={{ backgroundImage: `url(${state.currentBook.coverUrl})` }}
           />
-          <div className="text-center space-y-2">
-            <h2 className="text-xl font-black text-white leading-tight">{currentTopic?.title || state.currentBook.title}</h2>
-            <p className="text-sm text-gray-400">{state.currentBook.author}</p>
+          <div className="text-center space-y-1 max-w-full px-2 overflow-y-auto max-h-[15vh] shrink-0">
+            <h2 className="text-lg font-black text-white leading-snug break-words">{currentTopic?.title || state.currentBook.title}</h2>
+            <p className="text-sm text-gray-400 break-words">{state.currentBook.author}</p>
             <p className="text-xs text-primary font-bold">
               Bölüm {state.currentTopicIndex + 1} / {topics.length}
             </p>
