@@ -401,6 +401,15 @@ const Player: React.FC<PlayerProps> = ({ state, onTogglePlay, onProgressUpdate, 
             {isMuted || volume === 0 ? 'volume_off' : 'volume_up'}
           </span>
         </button>
+
+        {/* Tam Ekran Butonu (Desktop) */}
+        <button
+          onClick={() => setIsFullscreen(true)}
+          className="hidden md:flex text-slate-400 hover:text-primary transition-colors p-1"
+          title="Tam Ekran"
+        >
+          <span className="material-symbols-outlined text-2xl md:text-3xl">open_in_full</span>
+        </button>
       </div>
     </div>
   );
