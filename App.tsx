@@ -543,6 +543,7 @@ const App: React.FC = () => {
                 <BookCard
                   key={b.id}
                   book={b}
+                  matchedTopics={searchQuery ? b.topics?.filter(t => t.title.toLocaleLowerCase('tr-TR').includes(searchQuery.toLocaleLowerCase('tr-TR').trim())) || [] : []}
                   onClick={setSelectedBook}
                   onPlay={() => handlePlayBook(b)}
                   onResume={() => {

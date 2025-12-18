@@ -47,6 +47,13 @@ const BookCard: React.FC<BookCardProps> = ({ book, matchedTopics = [], onClick, 
           alt={book.title}
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000"
         />
+        {/* Hover overlay - Detay simgesi */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 flex flex-col items-center justify-center gap-2 backdrop-blur-[2px]">
+          <div className="size-12 md:size-16 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center transform scale-50 group-hover:scale-100 transition-all duration-300 border border-white/30">
+            <span className="material-symbols-outlined text-white text-2xl md:text-3xl">visibility</span>
+          </div>
+          <span className="text-white text-xs font-medium opacity-0 group-hover:opacity-100 transition-all duration-500 delay-100">Detayları Gör</span>
+        </div>
       </div>
 
       <div className="space-y-1 md:space-y-2 px-1 md:px-2 pb-1 md:pb-2">
