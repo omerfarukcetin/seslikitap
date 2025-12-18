@@ -31,6 +31,7 @@ export interface Book {
   topics?: Topic[];
   createdAt?: string;
   updatedAt?: string;
+  buyUrl?: string;
 }
 
 export interface PlayerState {

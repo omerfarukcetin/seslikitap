@@ -402,10 +402,19 @@ const App: React.FC = () => {
                 <span className="px-4 py-1 rounded-full bg-primary/20 text-primary text-xs font-bold uppercase">{book.category}</span>
                 <span className="font-bold opacity-60 md:text-xl">{book.author}</span>
               </div>
-              <div className="flex justify-center lg:justify-start gap-4 pt-4">
-                <button onClick={() => handlePlayBook(book)} className="px-10 py-4 bg-primary text-white rounded-full font-bold shadow-xl flex items-center gap-2 active:scale-95 transition-all">
+              <div className="flex flex-wrap justify-center lg:justify-start gap-4 pt-4">
+                <button onClick={() => handlePlayBook(book)} className="px-8 py-4 bg-primary text-white rounded-full font-bold shadow-xl flex items-center gap-2 active:scale-95 transition-all">
                   <span className="material-symbols-outlined fill-1">play_arrow</span> Hemen Dinle
                 </button>
+                <a
+                  href={book.buyUrl || '#'}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => { if (!book.buyUrl) e.preventDefault(); }}
+                  className={`px-8 py-4 rounded-full font-bold flex items-center gap-2 transition-all ${book.buyUrl ? 'bg-green-500 text-white shadow-xl active:scale-95' : 'bg-gray-300 text-gray-500 cursor-not-allowed'}`}
+                >
+                  <span className="material-symbols-outlined">shopping_cart</span> Satın Al
+                </a>
                 <button onClick={() => {
                   if (!currentUser) { setShowAuthModal(true); return; }
                   const newFavs = isFav ? userData.favorites.filter(id => id !== book.id) : [...userData.favorites, book.id];
@@ -511,6 +520,7 @@ const App: React.FC = () => {
                     const newFavs = userData.favorites.includes(b.id) ? userData.favorites.filter(id => id !== b.id) : [...userData.favorites, b.id];
                     updateFavoritesInFirebase(currentUser.uid, newFavs);
                   }}
+                  progress={userData.progress[b.id]}
                 />
               ))}
             </div>
