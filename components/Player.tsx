@@ -146,7 +146,7 @@ const Player: React.FC<PlayerProps> = ({ state, onTogglePlay, onProgressUpdate, 
           {/* Progress */}
           <div>
             <div
-              className="h-2 w-full bg-white/10 rounded-full cursor-pointer relative overflow-hidden"
+              className="h-2 w-full bg-white/10 rounded-full cursor-pointer relative"
               onClick={(e) => {
                 const rect = e.currentTarget.getBoundingClientRect();
                 const percent = (e.clientX - rect.left) / rect.width;
@@ -156,6 +156,10 @@ const Player: React.FC<PlayerProps> = ({ state, onTogglePlay, onProgressUpdate, 
               }}
             >
               <div className="h-full bg-primary rounded-full" style={{ width: `${state.progress}%` }}></div>
+              <div
+                className="absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-white rounded-full shadow-lg border-2 border-primary"
+                style={{ left: `calc(${state.progress}% - 8px)` }}
+              ></div>
             </div>
             <div className="flex justify-between text-xs font-mono text-gray-400 mt-2">
               <span>{state.currentTime}</span>
@@ -310,7 +314,7 @@ const Player: React.FC<PlayerProps> = ({ state, onTogglePlay, onProgressUpdate, 
 
         <div className="w-full">
           <div
-            className="h-1.5 w-full bg-slate-200 dark:bg-white/10 rounded-full cursor-pointer relative overflow-hidden group"
+            className="h-1.5 w-full bg-slate-200 dark:bg-white/10 rounded-full cursor-pointer relative group"
             onClick={(e) => {
               const rect = e.currentTarget.getBoundingClientRect();
               const percent = (e.clientX - rect.left) / rect.width;
@@ -320,6 +324,10 @@ const Player: React.FC<PlayerProps> = ({ state, onTogglePlay, onProgressUpdate, 
             }}
           >
             <div className="h-full bg-primary rounded-full transition-all group-hover:bg-primary/80" style={{ width: `${state.progress}%` }}></div>
+            <div
+              className="absolute top-1/2 -translate-y-1/2 w-3 h-3 bg-primary rounded-full shadow-md border-2 border-white opacity-0 group-hover:opacity-100 transition-opacity"
+              style={{ left: `calc(${state.progress}% - 6px)` }}
+            ></div>
           </div>
           <div className="flex justify-between text-xs font-bold font-mono opacity-60 mt-1.5 tracking-tight">
             <span>{state.currentTime}</span>
@@ -329,8 +337,12 @@ const Player: React.FC<PlayerProps> = ({ state, onTogglePlay, onProgressUpdate, 
       </div>
 
       {/* Mobile-Only Progress Bar */}
-      <div className="w-full md:hidden h-1.5 bg-slate-200 dark:bg-white/10 rounded-full mt-1 overflow-hidden relative">
-        <div className="h-full bg-primary" style={{ width: `${state.progress}%` }}></div>
+      <div className="w-full md:hidden h-1.5 bg-slate-200 dark:bg-white/10 rounded-full mt-1 relative">
+        <div className="h-full bg-primary rounded-full" style={{ width: `${state.progress}%` }}></div>
+        <div
+          className="absolute top-1/2 -translate-y-1/2 w-3 h-3 bg-primary rounded-full shadow-md border-2 border-white"
+          style={{ left: `calc(${state.progress}% - 6px)` }}
+        ></div>
       </div>
 
       {/* Speed & Tools */}
