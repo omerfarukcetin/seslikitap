@@ -4,18 +4,18 @@ import { Book, PlayerState, AppState, BookCategory, Topic } from './types';
 import { MOCK_BOOKS } from './constants';
 import Player from './components/Player';
 import BookCard from './components/BookCard';
-import { 
-  subscribeToBooks, 
+import {
+  subscribeToBooks,
   db,
   doc,
   setDoc,
   deleteDoc,
-  auth, 
-  signIn, 
-  signUp, 
-  logout, 
-  syncUserData, 
-  updateFavoritesInFirebase, 
+  auth,
+  signIn,
+  signUp,
+  logout,
+  syncUserData,
+  updateFavoritesInFirebase,
   updateProgressInFirebase,
   updatePlaybackSpeedInFirebase,
   updateUsernameInFirebase,
@@ -44,8 +44,8 @@ const App: React.FC = () => {
   const [books, setBooks] = useState<Book[]>(MOCK_BOOKS);
   const [userData, setUserData] = useState<{
     username: string,
-    favorites: string[], 
-    progress: Record<string, {topicIndex: number, percent: number}>,
+    favorites: string[],
+    progress: Record<string, { topicIndex: number, percent: number }>,
     playbackSpeed: number
   }>({
     username: '',
@@ -57,10 +57,10 @@ const App: React.FC = () => {
   const [isAdminPanel, setIsAdminPanel] = useState(false);
   const [selectedBook, setSelectedBook] = useState<Book | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
-  
+
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
-  
+
   const [authEmail, setAuthEmail] = useState('');
   const [authPassword, setAuthPassword] = useState('');
   const [newUsername, setNewUsername] = useState('');
@@ -87,11 +87,11 @@ const App: React.FC = () => {
       if (user) {
         setCurrentUser(user);
         const isAdminAccount = user.email === 'admin@admin.com';
-        setAppState(prev => ({ 
-          ...prev, 
-          isLoggedIn: true, 
+        setAppState(prev => ({
+          ...prev,
+          isLoggedIn: true,
           isAdmin: isAdminAccount,
-          user: { name: user.email?.split('@')[0] || 'Kullanıcı', avatar: '', isPremium: true } 
+          user: { name: user.email?.split('@')[0] || 'Kullanıcı', avatar: '', isPremium: true }
         }));
       } else {
         setCurrentUser(null);
@@ -122,13 +122,45 @@ const App: React.FC = () => {
   useEffect(() => {
     const unsub = subscribeToBooks((firebaseBooks) => {
       setBooks(prev => {
-         const combined = [...MOCK_BOOKS];
-         firebaseBooks.forEach(fb => {
-            const idx = combined.findIndex(c => c.id === fb.id);
-            if (idx > -1) combined[idx] = fb as Book;
-            else combined.push(fb as Book);
-         });
-         return combined;
+        const combined = [...MOCK_BOOKS];
+        // Firebase'den gelen kitapları validate et
+        const validBooks = firebaseBooks.filter(fb => {
+          // Minimum gerekli alanları kontrol et
+          if (!fb || !fb.id || typeof fb.id !== 'string') {
+            console.warn('Invalid book skipped: missing id', fb);
+            return false;
+          }
+          if (!fb.title || typeof fb.title !== 'string') {
+            console.warn('Invalid book skipped: missing title', fb);
+            return false;
+          }
+          // topics varsa array olmalı
+          if (fb.topics && !Array.isArray(fb.topics)) {
+            console.warn('Invalid book skipped: topics is not an array', fb);
+            return false;
+          }
+          return true;
+        });
+
+        validBooks.forEach(fb => {
+          // Eksik alanları varsayılan değerlerle doldur
+          const safeBook = {
+            ...fb,
+            author: fb.author || 'Bilinmeyen Yazar',
+            category: fb.category || 'Din',
+            description: fb.description || '',
+            coverUrl: fb.coverUrl || 'https://via.placeholder.com/300x450',
+            duration: fb.duration || '',
+            rating: fb.rating || 0,
+            reviewsCount: fb.reviewsCount || 0,
+            topics: Array.isArray(fb.topics) ? fb.topics : []
+          } as Book;
+
+          const idx = combined.findIndex(c => c.id === safeBook.id);
+          if (idx > -1) combined[idx] = safeBook;
+          else combined.push(safeBook);
+        });
+        return combined;
       });
     });
     return () => unsub();
@@ -177,10 +209,10 @@ const App: React.FC = () => {
     }));
 
     if (currentUser && playerState.currentBook && Math.floor(currentSeconds) % 10 === 0) {
-       updateProgressInFirebase(currentUser.uid, playerState.currentBook.id, {
-         topicIndex: playerState.currentTopicIndex,
-         percent: progress
-       });
+      updateProgressInFirebase(currentUser.uid, playerState.currentBook.id, {
+        topicIndex: playerState.currentTopicIndex,
+        percent: progress
+      });
     }
   };
 
@@ -224,8 +256,8 @@ const App: React.FC = () => {
   const filteredBooks = useMemo(() => {
     const q = searchQuery.toLocaleLowerCase('tr-TR').trim();
     if (!q) return books;
-    return books.filter(b => 
-      b.title.toLocaleLowerCase('tr-TR').includes(q) || 
+    return books.filter(b =>
+      b.title.toLocaleLowerCase('tr-TR').includes(q) ||
       (b.author || '').toLocaleLowerCase('tr-TR').includes(q) ||
       b.topics?.some(t => t.title.toLocaleLowerCase('tr-TR').includes(q))
     );
@@ -240,15 +272,15 @@ const App: React.FC = () => {
           </div>
           <h2 className="text-2xl font-bold">Yönetici Girişi</h2>
           <div className="w-full max-w-xs space-y-4">
-            <input 
-              type="password" 
-              className="glass-panel p-4 rounded-2xl w-full outline-none text-center" 
-              placeholder="Panel Şifresi" 
-              value={adminPanelPassword} 
+            <input
+              type="password"
+              className="glass-panel p-4 rounded-2xl w-full outline-none text-center"
+              placeholder="Panel Şifresi"
+              value={adminPanelPassword}
               onChange={e => setAdminPanelPassword(e.target.value)}
             />
-            <button 
-              onClick={() => adminPanelPassword === 'Admin.2025' ? setIsAdminAuthenticated(true) : alert('Hatalı!')} 
+            <button
+              onClick={() => adminPanelPassword === 'Admin.2025' ? setIsAdminAuthenticated(true) : alert('Hatalı!')}
               className="w-full bg-primary text-white py-4 rounded-2xl font-bold transition-all"
             >
               Giriş
@@ -273,7 +305,7 @@ const App: React.FC = () => {
               <span className="font-bold truncate">{b.title}</span>
               <div className="flex gap-2">
                 <button onClick={() => { setEditingBook(b); setTopicsJson(JSON.stringify(b.topics || [], null, 2)); }} className="p-2 text-primary"><span className="material-symbols-outlined">edit</span></button>
-                <button onClick={() => {if(window.confirm('Silinsin mi?')) deleteDoc(doc(db, "books", b.id))}} className="p-2 text-red-500"><span className="material-symbols-outlined">delete</span></button>
+                <button onClick={() => { if (window.confirm('Silinsin mi?')) deleteDoc(doc(db, "books", b.id)) }} className="p-2 text-red-500"><span className="material-symbols-outlined">delete</span></button>
               </div>
             </div>
           ))}
@@ -281,37 +313,37 @@ const App: React.FC = () => {
         {editingBook && (
           <div className="fixed inset-0 z-[110] bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
             <div className="glass-panel w-full max-w-4xl max-h-[90vh] overflow-y-auto p-6 md:p-10 rounded-[2.5rem] space-y-6 no-scrollbar">
-               <div className="flex justify-between">
-                 <h3 className="text-xl font-bold">Düzenle: {editingBook.title}</h3>
-                 <button onClick={() => setEditingBook(null)}><span className="material-symbols-outlined">close</span></button>
-               </div>
-               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <input className="glass-panel p-3 rounded-xl outline-none" placeholder="ID" value={editingBook.id} onChange={e => setEditingBook({...editingBook, id: e.target.value})} />
-                  <input className="glass-panel p-3 rounded-xl outline-none" placeholder="Başlık" value={editingBook.title} onChange={e => setEditingBook({...editingBook, title: e.target.value})} />
-                  <input className="glass-panel p-3 rounded-xl outline-none" placeholder="Yazar" value={editingBook.author} onChange={e => setEditingBook({...editingBook, author: e.target.value})} />
-                  <input className="glass-panel p-3 rounded-xl outline-none" placeholder="Kapak URL" value={editingBook.coverUrl} onChange={e => setEditingBook({...editingBook, coverUrl: e.target.value})} />
-                  <textarea className="glass-panel p-3 rounded-xl outline-none md:col-span-2 h-20" placeholder="Açıklama" value={editingBook.description} onChange={e => setEditingBook({...editingBook, description: e.target.value})} />
-                  <div className="md:col-span-2">
-                    <label className="text-xs font-bold opacity-50 mb-1 block">Bölümler (JSON)</label>
-                    <textarea 
-                      className="w-full glass-panel p-3 rounded-xl outline-none font-mono text-[10px] h-40" 
-                      value={topicsJson}
-                      onChange={e => setTopicsJson(e.target.value)}
-                      placeholder='[{"id": "topic-1", "title": "Bölüm 1", "audioUrl": "..."}]'
-                    />
-                  </div>
-               </div>
-               <button onClick={async () => {
-                 try {
-                   const parsedTopics = JSON.parse(topicsJson);
-                   const bookToSave = { ...editingBook, topics: parsedTopics, createdAt: editingBook.createdAt || new Date().toISOString() };
-                   await setDoc(doc(db, "books", editingBook.id!), bookToSave, {merge: true});
-                   setEditingBook(null);
-                   setTopicsJson('');
-                 } catch (err: any) {
-                   alert('JSON formatı hatalı: ' + err.message);
-                 }
-               }} className="w-full bg-primary text-white py-4 rounded-2xl font-bold">Veritabanına Kaydet</button>
+              <div className="flex justify-between">
+                <h3 className="text-xl font-bold">Düzenle: {editingBook.title}</h3>
+                <button onClick={() => setEditingBook(null)}><span className="material-symbols-outlined">close</span></button>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <input className="glass-panel p-3 rounded-xl outline-none" placeholder="ID" value={editingBook.id} onChange={e => setEditingBook({ ...editingBook, id: e.target.value })} />
+                <input className="glass-panel p-3 rounded-xl outline-none" placeholder="Başlık" value={editingBook.title} onChange={e => setEditingBook({ ...editingBook, title: e.target.value })} />
+                <input className="glass-panel p-3 rounded-xl outline-none" placeholder="Yazar" value={editingBook.author} onChange={e => setEditingBook({ ...editingBook, author: e.target.value })} />
+                <input className="glass-panel p-3 rounded-xl outline-none" placeholder="Kapak URL" value={editingBook.coverUrl} onChange={e => setEditingBook({ ...editingBook, coverUrl: e.target.value })} />
+                <textarea className="glass-panel p-3 rounded-xl outline-none md:col-span-2 h-20" placeholder="Açıklama" value={editingBook.description} onChange={e => setEditingBook({ ...editingBook, description: e.target.value })} />
+                <div className="md:col-span-2">
+                  <label className="text-xs font-bold opacity-50 mb-1 block">Bölümler (JSON)</label>
+                  <textarea
+                    className="w-full glass-panel p-3 rounded-xl outline-none font-mono text-[10px] h-40"
+                    value={topicsJson}
+                    onChange={e => setTopicsJson(e.target.value)}
+                    placeholder='[{"id": "topic-1", "title": "Bölüm 1", "audioUrl": "..."}]'
+                  />
+                </div>
+              </div>
+              <button onClick={async () => {
+                try {
+                  const parsedTopics = JSON.parse(topicsJson);
+                  const bookToSave = { ...editingBook, topics: parsedTopics, createdAt: editingBook.createdAt || new Date().toISOString() };
+                  await setDoc(doc(db, "books", editingBook.id!), bookToSave, { merge: true });
+                  setEditingBook(null);
+                  setTopicsJson('');
+                } catch (err: any) {
+                  alert('JSON formatı hatalı: ' + err.message);
+                }
+              }} className="w-full bg-primary text-white py-4 rounded-2xl font-bold">Veritabanına Kaydet</button>
             </div>
           </div>
         )}
@@ -342,7 +374,7 @@ const App: React.FC = () => {
                   <span className="material-symbols-outlined fill-1">play_arrow</span> Hemen Dinle
                 </button>
                 <button onClick={() => {
-                  if(!currentUser) { setShowAuthModal(true); return; }
+                  if (!currentUser) { setShowAuthModal(true); return; }
                   const newFavs = isFav ? userData.favorites.filter(id => id !== book.id) : [...userData.favorites, book.id];
                   updateFavoritesInFirebase(currentUser.uid, newFavs);
                 }} className={`size-14 rounded-full flex items-center justify-center border-2 transition-all ${isFav ? 'bg-red-500 border-red-500 text-white' : 'border-white/10'}`}>
@@ -366,8 +398,8 @@ const App: React.FC = () => {
                       const active = playerState.currentBook?.id === book.id && playerState.currentTopicIndex === i;
                       return (
                         <div key={t.id} onClick={() => handlePlayBook(book, i)} className={`p-4 rounded-2xl cursor-pointer transition-all border flex justify-between items-center group ${active ? 'bg-primary text-white border-primary shadow-lg' : 'bg-white/5 border-transparent hover:bg-white/10'}`}>
-                           <span className="truncate font-bold text-xs md:text-sm">{t.title}</span>
-                           <span className="material-symbols-outlined shrink-0">{active && playerState.isPlaying ? 'pause' : 'play_circle'}</span>
+                          <span className="truncate font-bold text-xs md:text-sm">{t.title}</span>
+                          <span className="material-symbols-outlined shrink-0">{active && playerState.isPlaying ? 'pause' : 'play_circle'}</span>
                         </div>
                       );
                     })}
@@ -393,31 +425,31 @@ const App: React.FC = () => {
 
         <div className="flex-1 max-w-xl mx-6 md:mx-12 relative group">
           <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 opacity-30 group-focus-within:text-primary transition-colors">search</span>
-          <input 
-            className="w-full pl-12 pr-6 py-3.5 rounded-full glass-panel border-none outline-none focus:ring-2 focus:ring-primary/40 transition-all text-sm md:text-base" 
-            placeholder="Kitap veya yazar ara..." 
-            value={searchQuery} 
-            onChange={e => {setSearchQuery(e.target.value); setSelectedBook(null); setIsAdminPanel(false);}}
+          <input
+            className="w-full pl-12 pr-6 py-3.5 rounded-full glass-panel border-none outline-none focus:ring-2 focus:ring-primary/40 transition-all text-sm md:text-base"
+            placeholder="Kitap veya yazar ara..."
+            value={searchQuery}
+            onChange={e => { setSearchQuery(e.target.value); setSelectedBook(null); setIsAdminPanel(false); }}
           />
         </div>
 
         <div className="flex items-center gap-2 md:gap-4">
-          <button 
-            onClick={toggleTheme} 
+          <button
+            onClick={toggleTheme}
             className="size-10 md:size-14 rounded-full glass-panel flex items-center justify-center hover:scale-105 active:scale-95 transition-all outline-none"
           >
             <span className="material-symbols-outlined pointer-events-none">
               {appState.theme === 'dark' ? 'light_mode' : (appState.theme === 'light' ? 'water_drop' : (appState.theme === 'blue' ? 'bakery_dining' : 'eco'))}
             </span>
           </button>
-          
+
           {appState.isAdmin && (
-             <button onClick={() => setIsAdminPanel(!isAdminPanel)} className={`size-10 md:size-14 rounded-full flex items-center justify-center transition-all ${isAdminPanel ? 'bg-primary text-white' : 'glass-panel text-primary'}`}>
-               <span className="material-symbols-outlined">settings</span>
-             </button>
+            <button onClick={() => setIsAdminPanel(!isAdminPanel)} className={`size-10 md:size-14 rounded-full flex items-center justify-center transition-all ${isAdminPanel ? 'bg-primary text-white' : 'glass-panel text-primary'}`}>
+              <span className="material-symbols-outlined">settings</span>
+            </button>
           )}
 
-          <button 
+          <button
             className="size-10 md:size-14 rounded-full glass-panel flex items-center justify-center border-2 border-primary/20 hover:scale-105 active:scale-95 transition-all outline-none"
             onClick={(e) => { e.stopPropagation(); appState.isLoggedIn ? setShowProfileModal(true) : setShowAuthModal(true); }}
           >
@@ -429,73 +461,73 @@ const App: React.FC = () => {
       <main className="flex-1 overflow-y-auto no-scrollbar">
         {isAdminPanel ? renderAdmin() : selectedBook ? renderDetail(selectedBook) : (
           <div className="px-4 md:px-12 py-6 space-y-10 pb-40 max-w-[1800px] mx-auto animate-fade-in">
-             <div className="flex items-baseline gap-4">
-                <h2 className="text-2xl md:text-5xl font-black tracking-tight">{searchQuery ? 'Arama Sonuçları' : 'Tüm Kitaplar'}</h2>
-                <span className="opacity-40 font-bold text-sm md:text-lg">({filteredBooks.length})</span>
-             </div>
-             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-10">
-                {filteredBooks.map(b => (
-                  <BookCard 
-                    key={b.id} 
-                    book={b} 
-                    onClick={setSelectedBook} 
-                    onPlay={() => handlePlayBook(b)} 
-                    isFavorite={userData.favorites.includes(b.id)} 
-                    onToggleFavorite={() => {
-                      if(!currentUser) { setShowAuthModal(true); return; }
-                      const newFavs = userData.favorites.includes(b.id) ? userData.favorites.filter(id => id !== b.id) : [...userData.favorites, b.id];
-                      updateFavoritesInFirebase(currentUser.uid, newFavs);
-                    }} 
-                  />
-                ))}
-             </div>
+            <div className="flex items-baseline gap-4">
+              <h2 className="text-2xl md:text-5xl font-black tracking-tight">{searchQuery ? 'Arama Sonuçları' : 'Tüm Kitaplar'}</h2>
+              <span className="opacity-40 font-bold text-sm md:text-lg">({filteredBooks.length})</span>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-10">
+              {filteredBooks.map(b => (
+                <BookCard
+                  key={b.id}
+                  book={b}
+                  onClick={setSelectedBook}
+                  onPlay={() => handlePlayBook(b)}
+                  isFavorite={userData.favorites.includes(b.id)}
+                  onToggleFavorite={() => {
+                    if (!currentUser) { setShowAuthModal(true); return; }
+                    const newFavs = userData.favorites.includes(b.id) ? userData.favorites.filter(id => id !== b.id) : [...userData.favorites, b.id];
+                    updateFavoritesInFirebase(currentUser.uid, newFavs);
+                  }}
+                />
+              ))}
+            </div>
           </div>
         )}
       </main>
 
       {showAuthModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
-           <div className="glass-panel w-full max-w-md p-10 rounded-[3rem] space-y-8 animate-fade-in">
-              <div className="text-center space-y-2">
-                 <h2 className="text-3xl font-black">{isRegistering ? 'Kayıt Ol' : 'Giriş Yap'}</h2>
-                 <p className="text-xs opacity-50">Binlerce sayfa ses, tek tıkla kulağında.</p>
-              </div>
-              <form onSubmit={handleAuth} className="space-y-4">
-                 <input type="email" placeholder="E-posta" required className="w-full p-4 rounded-2xl glass-panel outline-none focus:ring-2 focus:ring-primary/50 text-slate-900 dark:text-white" value={authEmail} onChange={e => setAuthEmail(e.target.value)} />
-                 <input type="password" placeholder="Şifre" required className="w-full p-4 rounded-2xl glass-panel outline-none focus:ring-2 focus:ring-primary/50 text-slate-900 dark:text-white" value={authPassword} onChange={e => setAuthPassword(e.target.value)} />
-                 <button type="submit" disabled={isAuthLoading} className="w-full py-4 bg-primary text-white rounded-2xl font-bold shadow-xl active:scale-95 transition-all">
-                    {isAuthLoading ? 'Yükleniyor...' : (isRegistering ? 'Kaydı Tamamla' : 'Giriş Yap')}
-                 </button>
-              </form>
-              <div className="flex flex-col gap-4 text-center">
-                <button onClick={() => setIsRegistering(!isRegistering)} className="text-xs font-bold text-primary hover:underline">{isRegistering ? 'Zaten hesabım var' : 'Hesabın yok mu? Hemen katıl'}</button>
-                <button onClick={() => setShowAuthModal(false)} className="text-[10px] opacity-40 hover:opacity-100 transition-opacity uppercase tracking-widest font-bold">Kapat / İptal</button>
-              </div>
-           </div>
+          <div className="glass-panel w-full max-w-md p-10 rounded-[3rem] space-y-8 animate-fade-in">
+            <div className="text-center space-y-2">
+              <h2 className="text-3xl font-black">{isRegistering ? 'Kayıt Ol' : 'Giriş Yap'}</h2>
+              <p className="text-xs opacity-50">Binlerce sayfa ses, tek tıkla kulağında.</p>
+            </div>
+            <form onSubmit={handleAuth} className="space-y-4">
+              <input type="email" placeholder="E-posta" required className="w-full p-4 rounded-2xl glass-panel outline-none focus:ring-2 focus:ring-primary/50 text-slate-900 dark:text-white" value={authEmail} onChange={e => setAuthEmail(e.target.value)} />
+              <input type="password" placeholder="Şifre" required className="w-full p-4 rounded-2xl glass-panel outline-none focus:ring-2 focus:ring-primary/50 text-slate-900 dark:text-white" value={authPassword} onChange={e => setAuthPassword(e.target.value)} />
+              <button type="submit" disabled={isAuthLoading} className="w-full py-4 bg-primary text-white rounded-2xl font-bold shadow-xl active:scale-95 transition-all">
+                {isAuthLoading ? 'Yükleniyor...' : (isRegistering ? 'Kaydı Tamamla' : 'Giriş Yap')}
+              </button>
+            </form>
+            <div className="flex flex-col gap-4 text-center">
+              <button onClick={() => setIsRegistering(!isRegistering)} className="text-xs font-bold text-primary hover:underline">{isRegistering ? 'Zaten hesabım var' : 'Hesabın yok mu? Hemen katıl'}</button>
+              <button onClick={() => setShowAuthModal(false)} className="text-[10px] opacity-40 hover:opacity-100 transition-opacity uppercase tracking-widest font-bold">Kapat / İptal</button>
+            </div>
+          </div>
         </div>
       )}
 
       {showProfileModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
-           <div className="glass-panel w-full max-w-sm p-8 rounded-[2.5rem] space-y-6 animate-fade-in">
-              <h3 className="text-xl font-bold">Hesap Ayarları</h3>
-              <form onSubmit={handleUpdateUsername} className="space-y-4">
-                 <label className="text-[10px] font-bold opacity-40 uppercase ml-2">Görünen İsim</label>
-                 <input type="text" className="w-full p-4 rounded-2xl glass-panel outline-none focus:ring-2 focus:ring-primary/50 text-slate-900 dark:text-white" value={newUsername} onChange={e => setNewUsername(e.target.value)} />
-                 <button type="submit" className="w-full py-4 bg-primary text-white rounded-2xl font-bold transition-all">Güncelle</button>
-              </form>
-              <button onClick={() => { logout(); setShowProfileModal(false); }} className="w-full py-3 bg-red-500/10 text-red-500 rounded-2xl text-sm font-bold hover:bg-red-500 hover:text-white transition-all">Çıkış Yap</button>
-              <button onClick={() => setShowProfileModal(false)} className="w-full text-xs opacity-40">Kapat</button>
-           </div>
+          <div className="glass-panel w-full max-w-sm p-8 rounded-[2.5rem] space-y-6 animate-fade-in">
+            <h3 className="text-xl font-bold">Hesap Ayarları</h3>
+            <form onSubmit={handleUpdateUsername} className="space-y-4">
+              <label className="text-[10px] font-bold opacity-40 uppercase ml-2">Görünen İsim</label>
+              <input type="text" className="w-full p-4 rounded-2xl glass-panel outline-none focus:ring-2 focus:ring-primary/50 text-slate-900 dark:text-white" value={newUsername} onChange={e => setNewUsername(e.target.value)} />
+              <button type="submit" className="w-full py-4 bg-primary text-white rounded-2xl font-bold transition-all">Güncelle</button>
+            </form>
+            <button onClick={() => { logout(); setShowProfileModal(false); }} className="w-full py-3 bg-red-500/10 text-red-500 rounded-2xl text-sm font-bold hover:bg-red-500 hover:text-white transition-all">Çıkış Yap</button>
+            <button onClick={() => setShowProfileModal(false)} className="w-full text-xs opacity-40">Kapat</button>
+          </div>
         </div>
       )}
 
-      <Player 
-        state={playerState} 
-        onTogglePlay={() => setPlayerState(p => ({...p, isPlaying: !p.isPlaying}))} 
+      <Player
+        state={playerState}
+        onTogglePlay={() => setPlayerState(p => ({ ...p, isPlaying: !p.isPlaying }))}
         onProgressUpdate={onProgressUpdate}
-        onNext={() => {}} 
-        onPrev={() => {}}
+        onNext={() => { }}
+        onPrev={() => { }}
         onSpeedChange={(s) => {
           setPlayerState(prev => ({ ...prev, playbackSpeed: s }));
           if (currentUser) updatePlaybackSpeedInFirebase(currentUser.uid, s);
