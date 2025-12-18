@@ -117,9 +117,9 @@ const Player: React.FC<PlayerProps> = ({ state, onTogglePlay, onProgressUpdate, 
         </div>
 
         {/* Cover & Info */}
-        <div className="flex-1 flex flex-col items-center justify-center px-8 gap-6 min-h-0">
+        <div className="flex-1 flex flex-col items-center justify-center px-8 gap-4 min-h-0 overflow-hidden">
           <div
-            className={`w-64 h-64 rounded-3xl bg-cover bg-center shadow-2xl border-4 border-white/10 ${state.isPlaying ? 'animate-pulse' : ''}`}
+            className={`w-40 h-60 max-w-[40vw] max-h-[30vh] rounded-2xl bg-cover bg-center shadow-2xl border-2 border-white/10 shrink-0 ${state.isPlaying ? 'animate-pulse' : ''}`}
             style={{ backgroundImage: `url(${state.currentBook.coverUrl})` }}
           />
           <div className="text-center space-y-2">
