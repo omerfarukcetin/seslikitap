@@ -68,6 +68,7 @@ const App: React.FC = () => {
   const [isAuthLoading, setIsAuthLoading] = useState(false);
 
   const [editingBook, setEditingBook] = useState<Partial<Book> | null>(null);
+  const [topicsJson, setTopicsJson] = useState<string>('');
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
   const [adminPanelPassword, setAdminPanelPassword] = useState('');
 
@@ -262,7 +263,7 @@ const App: React.FC = () => {
         <div className="flex justify-between items-center">
           <h2 className="text-3xl font-bold">Kitap Yönetimi</h2>
           <div className="flex gap-2">
-            <button onClick={() => setEditingBook({ id: 'book-' + Date.now(), title: '', author: '', topics: [] })} className="bg-primary text-white px-6 py-2 rounded-xl text-sm font-bold">+ Yeni</button>
+            <button onClick={() => { const newBook = { id: 'book-' + Date.now(), title: '', author: '', topics: [] }; setEditingBook(newBook); setTopicsJson('[]'); }} className="bg-primary text-white px-6 py-2 rounded-xl text-sm font-bold">+ Yeni</button>
             <button onClick={() => setIsAdminPanel(false)} className="glass-panel px-6 py-2 rounded-xl text-sm">Paneli Kapat</button>
           </div>
         </div>
@@ -271,7 +272,7 @@ const App: React.FC = () => {
             <div key={b.id} className="glass-panel p-4 rounded-2xl flex justify-between items-center">
               <span className="font-bold truncate">{b.title}</span>
               <div className="flex gap-2">
-                <button onClick={() => setEditingBook(b)} className="p-2 text-primary"><span className="material-symbols-outlined">edit</span></button>
+                <button onClick={() => { setEditingBook(b); setTopicsJson(JSON.stringify(b.topics || [], null, 2)); }} className="p-2 text-primary"><span className="material-symbols-outlined">edit</span></button>
                 <button onClick={() => {if(window.confirm('Silinsin mi?')) deleteDoc(doc(db, "books", b.id))}} className="p-2 text-red-500"><span className="material-symbols-outlined">delete</span></button>
               </div>
             </div>
@@ -294,14 +295,22 @@ const App: React.FC = () => {
                     <label className="text-xs font-bold opacity-50 mb-1 block">Bölümler (JSON)</label>
                     <textarea 
                       className="w-full glass-panel p-3 rounded-xl outline-none font-mono text-[10px] h-40" 
-                      value={JSON.stringify(editingBook.topics, null, 2)}
-                      onChange={e => {try{ setEditingBook({...editingBook, topics: JSON.parse(e.target.value)})}catch(e){}}}
+                      value={topicsJson}
+                      onChange={e => setTopicsJson(e.target.value)}
+                      placeholder='[{"id": "topic-1", "title": "Bölüm 1", "audioUrl": "..."}]'
                     />
                   </div>
                </div>
                <button onClick={async () => {
-                 await setDoc(doc(db, editingBook.id!), editingBook, {merge: true});
-                 setEditingBook(null);
+                 try {
+                   const parsedTopics = JSON.parse(topicsJson);
+                   const bookToSave = { ...editingBook, topics: parsedTopics, createdAt: editingBook.createdAt || new Date().toISOString() };
+                   await setDoc(doc(db, "books", editingBook.id!), bookToSave, {merge: true});
+                   setEditingBook(null);
+                   setTopicsJson('');
+                 } catch (err: any) {
+                   alert('JSON formatı hatalı: ' + err.message);
+                 }
                }} className="w-full bg-primary text-white py-4 rounded-2xl font-bold">Veritabanına Kaydet</button>
             </div>
           </div>
