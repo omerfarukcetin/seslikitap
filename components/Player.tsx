@@ -113,10 +113,10 @@ const Player: React.FC<PlayerProps> = ({ state, onTogglePlay, onProgressUpdate, 
     }
   };
 
-  // Tam Ekran Mobil Player
+  // Tam Ekran Player
   if (isFullscreen) {
     return (
-      <div className="fixed inset-0 z-[100] bg-slate-900 flex flex-col animate-fade-in">
+      <div className="fixed inset-0 z-[100] bg-white dark:bg-slate-900 text-slate-900 dark:text-white flex flex-col md:flex-row animate-fade-in">
         <audio
           ref={audioRef}
           src={audioSrc}
@@ -124,125 +124,136 @@ const Player: React.FC<PlayerProps> = ({ state, onTogglePlay, onProgressUpdate, 
           onEnded={onNext}
         />
 
-        {/* Header */}
-        <div className="flex items-center justify-between p-3 shrink-0">
-          <button
-            onClick={() => setIsFullscreen(false)}
-            className="size-10 rounded-full bg-white/10 flex items-center justify-center"
-          >
-            <span className="material-symbols-outlined">keyboard_arrow_down</span>
-          </button>
-          <span className="text-xs font-bold opacity-50 uppercase tracking-widest">Şu an çalıyor</span>
-          <div className="size-10" /> {/* Spacer */}
-        </div>
+        {/* Kapatma butonu - sağ üst (web için) */}
+        <button
+          onClick={() => setIsFullscreen(false)}
+          className="absolute top-4 right-4 z-10 size-10 rounded-full bg-slate-200 dark:bg-white/10 flex items-center justify-center hover:bg-slate-300 dark:hover:bg-white/20 transition-colors"
+        >
+          <span className="material-symbols-outlined">close</span>
+        </button>
 
-        {/* Cover & Info - Daha kompakt */}
-        <div className="flex items-center px-4 gap-4 shrink-0">
-          <div
-            className="w-16 h-24 rounded-lg bg-cover bg-center shadow-xl border-2 border-white/10 shrink-0"
-            style={{ backgroundImage: `url(${state.currentBook.coverUrl})` }}
-          />
-          <div className="flex flex-col justify-center space-y-0.5 min-w-0 flex-1">
-            <h2 className="text-sm font-black text-white leading-snug break-words line-clamp-2">{currentTopic?.title || state.currentBook.title}</h2>
-            <p className="text-xs text-gray-400">{state.currentBook.author}</p>
-            <p className="text-[10px] text-primary font-bold">
-              Bölüm {state.currentTopicIndex + 1} / {topics.length}
-            </p>
-          </div>
-        </div>
-
-        {/* Controls - Daha yakın */}
-        <div className="px-4 py-3 space-y-3 shrink-0">
-          {/* Progress with Drag */}
-          <div>
-            <div
-              className="h-3 w-full bg-white/10 rounded-full cursor-pointer relative touch-none"
-              onClick={(e) => handleSeek(e, e.currentTarget)}
-              onTouchMove={(e) => handleSeek(e, e.currentTarget)}
-              onMouseDown={(e) => {
-                const bar = e.currentTarget;
-                const onMove = (ev: MouseEvent) => {
-                  const rect = bar.getBoundingClientRect();
-                  const percent = Math.max(0, Math.min(1, (ev.clientX - rect.left) / rect.width));
-                  if (audioRef.current && audioRef.current.duration) {
-                    audioRef.current.currentTime = percent * audioRef.current.duration;
-                  }
-                };
-                const onUp = () => {
-                  document.removeEventListener('mousemove', onMove);
-                  document.removeEventListener('mouseup', onUp);
-                };
-                document.addEventListener('mousemove', onMove);
-                document.addEventListener('mouseup', onUp);
-              }}
-            >
-              <div className="h-full bg-primary rounded-full" style={{ width: `${state.progress}%` }}></div>
-              <div
-                className="absolute top-1/2 -translate-y-1/2 w-5 h-5 bg-white rounded-full shadow-lg border-2 border-primary"
-                style={{ left: `calc(${state.progress}% - 10px)` }}
-              ></div>
-            </div>
-            <div className="flex justify-between text-xs font-mono text-gray-400 mt-1">
-              <span>{state.currentTime}</span>
-              <span>{state.totalDuration}</span>
-            </div>
-          </div>
-
-          {/* Playback Controls with Speed */}
-          <div className="flex items-center justify-center gap-4">
-            <button onClick={onPrev} className="text-white/60 active:text-primary transition-colors">
-              <span className="material-symbols-outlined text-3xl">skip_previous</span>
-            </button>
+        {/* Sol taraf - Oynatıcı (web) / Üst kısım (mobil) */}
+        <div className="flex-1 flex flex-col p-4 md:p-8 md:max-w-[50%]">
+          {/* Header - sadece mobil */}
+          <div className="flex items-center justify-between mb-4 md:hidden">
             <button
-              onClick={onTogglePlay}
-              className="size-14 rounded-full bg-primary flex items-center justify-center text-white shadow-xl active:scale-90 transition-transform"
+              onClick={() => setIsFullscreen(false)}
+              className="size-10 rounded-full bg-slate-200 dark:bg-white/10 flex items-center justify-center"
             >
-              <span className="material-symbols-outlined text-3xl fill-1">
-                {state.isPlaying ? 'pause' : 'play_arrow'}
-              </span>
+              <span className="material-symbols-outlined">keyboard_arrow_down</span>
             </button>
-            <button onClick={onNext} className="text-white/60 active:text-primary transition-colors">
-              <span className="material-symbols-outlined text-3xl">skip_next</span>
-            </button>
-            <div className="relative">
-              <button
-                onClick={() => setShowSpeedMenu(!showSpeedMenu)}
-                className="px-3 py-2 rounded-full bg-white/10 text-white text-sm font-bold"
+            <span className="text-xs font-bold opacity-50 uppercase tracking-widest">Şu an çalıyor</span>
+            <div className="size-10" /> {/* Spacer */}
+          </div>
+
+          {/* Cover & Info */}
+          <div className="flex flex-col items-center md:items-start flex-1 justify-center">
+            <div
+              className="w-48 h-72 md:w-64 md:h-96 rounded-2xl bg-cover bg-center shadow-2xl border-4 border-slate-200 dark:border-white/10 mb-6"
+              style={{ backgroundImage: `url(${state.currentBook.coverUrl})` }}
+            />
+            <div className="text-center md:text-left space-y-2 max-w-full">
+              <h2 className="text-lg md:text-2xl font-black leading-snug break-words line-clamp-2">{currentTopic?.title || state.currentBook.title}</h2>
+              <p className="text-sm opacity-70">{state.currentBook.author}</p>
+              <p className="text-xs text-primary font-bold">
+                Bölüm {state.currentTopicIndex + 1} / {topics.length}
+              </p>
+            </div>
+          </div>
+
+          {/* Controls */}
+          <div className="space-y-4 mt-6">
+            {/* Progress with Drag */}
+            <div>
+              <div
+                className="h-3 w-full bg-slate-200 dark:bg-white/10 rounded-full cursor-pointer relative touch-none"
+                onClick={(e) => handleSeek(e, e.currentTarget)}
+                onTouchMove={(e) => handleSeek(e, e.currentTarget)}
+                onMouseDown={(e) => {
+                  const bar = e.currentTarget;
+                  const onMove = (ev: MouseEvent) => {
+                    const rect = bar.getBoundingClientRect();
+                    const percent = Math.max(0, Math.min(1, (ev.clientX - rect.left) / rect.width));
+                    if (audioRef.current && audioRef.current.duration) {
+                      audioRef.current.currentTime = percent * audioRef.current.duration;
+                    }
+                  };
+                  const onUp = () => {
+                    document.removeEventListener('mousemove', onMove);
+                    document.removeEventListener('mouseup', onUp);
+                  };
+                  document.addEventListener('mousemove', onMove);
+                  document.addEventListener('mouseup', onUp);
+                }}
               >
-                {state.playbackSpeed}x
+                <div className="h-full bg-primary rounded-full" style={{ width: `${state.progress}%` }}></div>
+                <div
+                  className="absolute top-1/2 -translate-y-1/2 w-5 h-5 bg-white dark:bg-white rounded-full shadow-lg border-2 border-primary"
+                  style={{ left: `calc(${state.progress}% - 10px)` }}
+                ></div>
+              </div>
+              <div className="flex justify-between text-xs font-mono opacity-60 mt-1">
+                <span>{state.currentTime}</span>
+                <span>{state.totalDuration}</span>
+              </div>
+            </div>
+
+            {/* Playback Controls with Speed */}
+            <div className="flex items-center justify-center gap-4 md:gap-6">
+              <button onClick={onPrev} className="opacity-60 hover:opacity-100 active:text-primary transition-colors">
+                <span className="material-symbols-outlined text-3xl md:text-4xl">skip_previous</span>
               </button>
-              {showSpeedMenu && (
-                <div className="absolute bottom-full mb-2 right-0 bg-slate-800 rounded-xl p-2 shadow-2xl border border-white/10 flex flex-col gap-1 z-[110]">
-                  {speeds.map(s => (
-                    <button
-                      key={s}
-                      onClick={() => { onSpeedChange(s); setShowSpeedMenu(false); }}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${state.playbackSpeed === s ? 'bg-primary text-white' : 'bg-white/10 text-white/70'}`}
-                    >
-                      {s}x
-                    </button>
-                  ))}
-                </div>
-              )}
+              <button
+                onClick={onTogglePlay}
+                className="size-16 md:size-20 rounded-full bg-primary flex items-center justify-center text-white shadow-xl hover:scale-105 active:scale-90 transition-transform"
+              >
+                <span className="material-symbols-outlined text-4xl md:text-5xl fill-1">
+                  {state.isPlaying ? 'pause' : 'play_arrow'}
+                </span>
+              </button>
+              <button onClick={onNext} className="opacity-60 hover:opacity-100 active:text-primary transition-colors">
+                <span className="material-symbols-outlined text-3xl md:text-4xl">skip_next</span>
+              </button>
+              <div className="relative">
+                <button
+                  onClick={() => setShowSpeedMenu(!showSpeedMenu)}
+                  className="px-3 py-2 rounded-full bg-slate-200 dark:bg-white/10 text-sm font-bold hover:bg-slate-300 dark:hover:bg-white/20 transition-colors"
+                >
+                  {state.playbackSpeed}x
+                </button>
+                {showSpeedMenu && (
+                  <div className="absolute bottom-full mb-2 right-0 bg-white dark:bg-slate-800 rounded-xl p-2 shadow-2xl border border-slate-200 dark:border-white/10 flex flex-col gap-1 z-[110]">
+                    {speeds.map(s => (
+                      <button
+                        key={s}
+                        onClick={() => { onSpeedChange(s); setShowSpeedMenu(false); }}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${state.playbackSpeed === s ? 'bg-primary text-white' : 'bg-slate-100 dark:bg-white/10 text-slate-700 dark:text-white/70'}`}
+                      >
+                        {s}x
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Topics List - Daha geniş */}
+        {/* Sağ taraf - Konu Listesi (web) / Alt kısım (mobil) */}
         {topics.length > 0 && (
-          <div className="flex-1 bg-black/40 border-t border-white/10 overflow-y-auto no-scrollbar">
-            <div className="p-3">
-              <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Bölümler ({topics.length})</h3>
-              <div className="space-y-1.5">
+          <div className="flex-1 md:max-w-[50%] bg-slate-100 dark:bg-black/40 border-t md:border-t-0 md:border-l border-slate-200 dark:border-white/10 overflow-y-auto no-scrollbar">
+            <div className="p-4 md:p-6">
+              <h3 className="text-sm font-bold opacity-60 uppercase tracking-widest mb-4">Bölümler ({topics.length})</h3>
+              <div className="space-y-2">
                 {topics.map((t, i) => {
                   const active = state.currentTopicIndex === i;
                   return (
                     <button
                       key={t.id}
                       onClick={() => handleTopicClick(i)}
-                      className={`w-full p-2.5 rounded-lg flex justify-between items-center text-left transition-colors ${active ? 'bg-primary text-white' : 'bg-white/5 text-white/70 active:bg-white/10'}`}
+                      className={`w-full p-3 md:p-4 rounded-xl flex justify-between items-center text-left transition-colors ${active ? 'bg-primary text-white' : 'bg-white dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10'}`}
                     >
-                      <span className="truncate text-sm font-medium">{t.title}</span>
+                      <span className="truncate text-sm md:text-base font-medium">{t.title}</span>
                       <span className="material-symbols-outlined text-lg shrink-0 ml-2">
                         {active && state.isPlaying ? 'pause' : 'play_circle'}
                       </span>
