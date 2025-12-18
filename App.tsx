@@ -119,43 +119,76 @@ const App: React.FC = () => {
     }
   }, [currentUser]);
 
+  // Sayfa açılışında localStorage'dan cache'lenmiş kitapları yükle
+  useEffect(() => {
+    const cached = localStorage.getItem('cachedFirebaseBooks');
+    if (cached) {
+      try {
+        const cachedBooks = JSON.parse(cached) as Book[];
+        setBooks(prev => {
+          const combined = [...MOCK_BOOKS];
+          cachedBooks.forEach(fb => {
+            const idx = combined.findIndex(c => c.id === fb.id);
+            if (idx > -1) combined[idx] = fb;
+            else combined.push(fb);
+          });
+          return combined;
+        });
+      } catch (e) {
+        console.warn('Cache parse error:', e);
+      }
+    }
+  }, []);
+
   useEffect(() => {
     const unsub = subscribeToBooks((firebaseBooks) => {
+      // Firebase'den gelen kitapları validate et
+      const validBooks = firebaseBooks.filter(fb => {
+        // Minimum gerekli alanları kontrol et
+        if (!fb || !fb.id || typeof fb.id !== 'string') {
+          console.warn('Invalid book skipped: missing id', fb);
+          return false;
+        }
+        if (!fb.title || typeof fb.title !== 'string') {
+          console.warn('Invalid book skipped: missing title', fb);
+          return false;
+        }
+        // topics varsa array olmalı
+        if (fb.topics && !Array.isArray(fb.topics)) {
+          console.warn('Invalid book skipped: topics is not an array', fb);
+          return false;
+        }
+        return true;
+      });
+
+      const processedBooks: Book[] = [];
+
+      validBooks.forEach(fb => {
+        // Eksik alanları varsayılan değerlerle doldur
+        const safeBook = {
+          ...fb,
+          author: fb.author || 'Bilinmeyen Yazar',
+          category: fb.category || 'Din',
+          description: fb.description || '',
+          coverUrl: fb.coverUrl || 'https://via.placeholder.com/300x450',
+          duration: fb.duration || '',
+          rating: fb.rating || 0,
+          reviewsCount: fb.reviewsCount || 0,
+          topics: Array.isArray(fb.topics) ? fb.topics : []
+        } as Book;
+        processedBooks.push(safeBook);
+      });
+
+      // LocalStorage'a cache'le (hızlı yükleme için)
+      try {
+        localStorage.setItem('cachedFirebaseBooks', JSON.stringify(processedBooks));
+      } catch (e) {
+        console.warn('Cache save error:', e);
+      }
+
       setBooks(prev => {
         const combined = [...MOCK_BOOKS];
-        // Firebase'den gelen kitapları validate et
-        const validBooks = firebaseBooks.filter(fb => {
-          // Minimum gerekli alanları kontrol et
-          if (!fb || !fb.id || typeof fb.id !== 'string') {
-            console.warn('Invalid book skipped: missing id', fb);
-            return false;
-          }
-          if (!fb.title || typeof fb.title !== 'string') {
-            console.warn('Invalid book skipped: missing title', fb);
-            return false;
-          }
-          // topics varsa array olmalı
-          if (fb.topics && !Array.isArray(fb.topics)) {
-            console.warn('Invalid book skipped: topics is not an array', fb);
-            return false;
-          }
-          return true;
-        });
-
-        validBooks.forEach(fb => {
-          // Eksik alanları varsayılan değerlerle doldur
-          const safeBook = {
-            ...fb,
-            author: fb.author || 'Bilinmeyen Yazar',
-            category: fb.category || 'Din',
-            description: fb.description || '',
-            coverUrl: fb.coverUrl || 'https://via.placeholder.com/300x450',
-            duration: fb.duration || '',
-            rating: fb.rating || 0,
-            reviewsCount: fb.reviewsCount || 0,
-            topics: Array.isArray(fb.topics) ? fb.topics : []
-          } as Book;
-
+        processedBooks.forEach(safeBook => {
           const idx = combined.findIndex(c => c.id === safeBook.id);
           if (idx > -1) combined[idx] = safeBook;
           else combined.push(safeBook);
