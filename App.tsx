@@ -394,12 +394,8 @@ const App: React.FC = () => {
           <span className="material-symbols-outlined">arrow_back</span> Ana Sayfaya Dön
         </button>
         <div className="flex flex-col lg:flex-row gap-8 xl:gap-16 items-start">
-          <div className="w-48 md:w-64 lg:w-72 xl:w-80 shrink-0 mx-auto lg:mx-0 space-y-4">
+          <div className="w-48 md:w-64 lg:w-72 xl:w-80 shrink-0 mx-auto lg:mx-0">
             <img src={book.coverUrl} className="w-full aspect-[1/1.5] object-cover rounded-[2rem] shadow-2xl border border-white/5" alt={book.title} />
-            <div className="text-center lg:text-left space-y-2">
-              <h1 className="text-xl md:text-2xl lg:text-3xl font-black leading-tight">{book.title}</h1>
-              <span className="font-bold opacity-60 text-sm md:text-base block">{book.author}</span>
-            </div>
           </div>
           <div className="flex-1 space-y-10">
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
@@ -408,7 +404,7 @@ const App: React.FC = () => {
                   <h3 className="text-xl md:text-2xl font-black">{book.title}</h3>
                   <span className="text-sm font-bold opacity-60 block">{book.author}</span>
                 </div>
-                <p className="leading-relaxed opacity-80 whitespace-pre-line text-sm md:text-base text-center">{book.description || "Açıklama yok."}</p>
+                <p className="leading-relaxed opacity-80 whitespace-pre-line text-sm md:text-base text-left">{book.description || "Açıklama yok."}</p>
                 {/* Butonlar */}
                 <div className="flex flex-wrap justify-center gap-4 pt-4 border-t border-white/10">
                   <button onClick={() => handlePlayBook(book)} className="px-8 py-4 bg-primary text-white rounded-full font-bold shadow-xl flex items-center gap-2 active:scale-95 transition-all">
