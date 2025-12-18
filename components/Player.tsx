@@ -51,6 +51,8 @@ const Player: React.FC<PlayerProps> = ({ state, onTogglePlay, onProgressUpdate, 
     if (audioRef.current && audioSrc) {
       audioRef.current.src = audioSrc;
       audioRef.current.load();
+      // Yeni parça yüklenince playbackRate sıfırlanır, tekrar ayarla
+      audioRef.current.playbackRate = state.playbackSpeed;
       if (state.isPlaying) {
         audioRef.current.play().catch(e => console.error("Audio play error:", e));
       }

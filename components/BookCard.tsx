@@ -22,13 +22,6 @@ const BookCard: React.FC<BookCardProps> = ({ book, matchedTopics = [], onClick, 
       className="group flex flex-col gap-2 md:gap-4 p-2 md:p-3 rounded-2xl md:rounded-[40px] glass-panel transition-all duration-500 cursor-pointer hover:-translate-y-1 md:hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(0,0,0,0.3)] border-transparent hover:border-primary/30 relative h-fit"
       onClick={() => onClick(book)}
     >
-      {/* Quick Favorite Button */}
-      <button
-        onClick={(e) => { e.stopPropagation(); onToggleFavorite(); }}
-        className={`absolute top-3 right-3 md:top-6 md:right-6 z-20 size-8 md:size-10 rounded-lg md:rounded-2xl flex items-center justify-center backdrop-blur-xl border border-white/10 transition-all ${isFavorite ? 'bg-red-500 text-white scale-110 shadow-lg shadow-red-500/20' : 'bg-black/20 text-white opacity-0 group-hover:opacity-100'}`}
-      >
-        <span className={`material-symbols-outlined text-[16px] md:text-[20px] ${isFavorite ? 'fill-1' : ''}`}>favorite</span>
-      </button>
 
       {/* "Devam Et" rozeti - tıklanabilir */}
       {hasProgress && onResume && (

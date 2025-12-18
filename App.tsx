@@ -387,7 +387,6 @@ const App: React.FC = () => {
   };
 
   const renderDetail = (book: Book) => {
-    const isFav = userData.favorites.includes(book.id);
     return (
       <div className="px-4 md:px-10 py-6 w-full animate-fade-in space-y-8 pb-40">
         <button onClick={() => setSelectedBook(null)} className="flex items-center gap-2 opacity-50 hover:opacity-100 font-bold">
@@ -401,7 +400,6 @@ const App: React.FC = () => {
             <div className="space-y-4 text-center lg:text-left">
               <h1 className="text-3xl md:text-6xl font-black leading-tight">{book.title}</h1>
               <div className="flex items-center justify-center lg:justify-start gap-4">
-                <span className="px-4 py-1 rounded-full bg-primary/20 text-primary text-xs font-bold uppercase">{book.category}</span>
                 <span className="font-bold opacity-60 md:text-xl">{book.author}</span>
               </div>
               <div className="flex flex-wrap justify-center lg:justify-start gap-4 pt-4">
@@ -426,13 +424,6 @@ const App: React.FC = () => {
                 >
                   <span className="material-symbols-outlined">menu_book</span> PDF Oku
                 </a>
-                <button onClick={() => {
-                  if (!currentUser) { setShowAuthModal(true); return; }
-                  const newFavs = isFav ? userData.favorites.filter(id => id !== book.id) : [...userData.favorites, book.id];
-                  updateFavoritesInFirebase(currentUser.uid, newFavs);
-                }} className={`size-14 rounded-full flex items-center justify-center border-2 transition-all ${isFav ? 'bg-red-500 border-red-500 text-white' : 'border-white/10'}`}>
-                  <span className={`material-symbols-outlined ${isFav ? 'fill-1' : ''}`}>favorite</span>
-                </button>
                 {/* İlerlemeyi Sıfırla butonu */}
                 {userData.progress[book.id] && (
                   <button
