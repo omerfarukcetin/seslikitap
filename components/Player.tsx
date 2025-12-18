@@ -49,19 +49,31 @@ const Player: React.FC<PlayerProps> = ({ state, onTogglePlay, onProgressUpdate, 
   // audioSrc değiştiğinde yeni parçayı yükle
   useEffect(() => {
     if (audioRef.current && audioSrc) {
-      audioRef.current.src = audioSrc;
-      audioRef.current.load();
-      // Yeni parça yüklenince playbackRate sıfırlanır, tekrar ayarla
-      audioRef.current.playbackRate = state.playbackSpeed;
-      if (state.isPlaying) {
-        audioRef.current.play().catch(e => console.error("Audio play error:", e));
-      }
+      const audio = audioRef.current;
+
+      // Yeni parça yüklenince playbackRate'yi ayarlamak için event listener
+      const handleLoadedData = () => {
+        audio.playbackRate = state.playbackSpeed;
+        if (state.isPlaying) {
+          audio.play().catch(e => console.error("Audio play error:", e));
+        }
+      };
+
+      audio.addEventListener('loadeddata', handleLoadedData, { once: true });
+      audio.src = audioSrc;
+      audio.load();
+
+      return () => {
+        audio.removeEventListener('loadeddata', handleLoadedData);
+      };
     }
   }, [audioSrc]);
 
   // isPlaying değiştiğinde play/pause
   useEffect(() => {
     if (audioRef.current && audioSrc) {
+      // Her play'de playbackRate'i de ayarla
+      audioRef.current.playbackRate = state.playbackSpeed;
       if (state.isPlaying) {
         audioRef.current.play().catch(e => console.error("Audio play error:", e));
       } else {
