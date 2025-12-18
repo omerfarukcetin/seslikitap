@@ -403,59 +403,58 @@ const App: React.FC = () => {
               <div className="flex items-center justify-center lg:justify-start gap-4">
                 <span className="font-bold opacity-60 md:text-xl">{book.author}</span>
               </div>
-              <div className="flex flex-wrap justify-center lg:justify-start gap-4 pt-4">
-                <button onClick={() => handlePlayBook(book)} className="px-8 py-4 bg-primary text-white rounded-full font-bold shadow-xl flex items-center gap-2 active:scale-95 transition-all">
-                  <span className="material-symbols-outlined fill-1">play_arrow</span> Hemen Dinle
-                </button>
-                <a
-                  href={book.buyUrl || '#'}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={(e) => { if (!book.buyUrl) e.preventDefault(); }}
-                  className={`px-6 py-4 rounded-full font-bold flex items-center gap-2 transition-all ${book.buyUrl ? 'bg-green-500 text-white shadow-xl active:scale-95' : 'bg-gray-300 text-gray-500 cursor-not-allowed'}`}
-                >
-                  <span className="material-symbols-outlined">shopping_cart</span> Satın Al
-                </a>
-                <a
-                  href={book.pdfUrl || '#'}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={(e) => { if (!book.pdfUrl) e.preventDefault(); }}
-                  className={`px-6 py-4 rounded-full font-bold flex items-center gap-2 transition-all ${book.pdfUrl ? 'bg-orange-500 text-white shadow-xl active:scale-95' : 'bg-gray-300 text-gray-500 cursor-not-allowed'}`}
-                >
-                  <span className="material-symbols-outlined">menu_book</span> PDF Oku
-                </a>
-                {/* İlerlemeyi Sıfırla butonu */}
-                {userData.progress[book.id] && (
-                  <button
-                    onClick={async () => {
-                      if (window.confirm('Bu kitaptaki ilerlemenizi sıfırlamak istediğinizden emin misiniz?')) {
-                        if (!currentUser) return;
-                        const newProgress = { ...userData.progress };
-                        delete newProgress[book.id];
-                        // Önce lokal state'i güncelle
-                        setUserData(prev => ({ ...prev, progress: newProgress }));
-                        // Firebase'e kaydet
-                        try {
-                          const userDocRef = doc(db, 'users', currentUser.uid);
-                          await setDoc(userDocRef, { progress: newProgress }, { merge: true });
-                        } catch (err) {
-                          console.error('İlerleme sıfırlanamadı:', err);
-                        }
-                      }
-                    }}
-                    className="size-14 rounded-full flex items-center justify-center border-2 border-white/10 hover:border-red-500/50 hover:bg-red-500/10 transition-all text-slate-400 hover:text-red-500"
-                    title="İlerlemeyi Sıfırla"
-                  >
-                    <span className="material-symbols-outlined">restart_alt</span>
-                  </button>
-                )}
-              </div>
             </div>
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-              <div className="glass-panel p-8 rounded-[2.5rem] space-y-4">
-                <h3 className="text-lg font-bold uppercase tracking-widest opacity-50 text-center lg:text-left">Kitap Hakkında</h3>
-                <p className="leading-relaxed opacity-80 whitespace-pre-line text-sm md:text-base">{book.description || "Açıklama yok."}</p>
+              <div className="glass-panel p-8 rounded-[2.5rem] space-y-6">
+                <h3 className="text-lg font-bold uppercase tracking-widest opacity-50 text-center">Kitap Hakkında</h3>
+                <p className="leading-relaxed opacity-80 whitespace-pre-line text-sm md:text-base text-center">{book.description || "Açıklama yok."}</p>
+                {/* Butonlar */}
+                <div className="flex flex-wrap justify-center gap-4 pt-4 border-t border-white/10">
+                  <button onClick={() => handlePlayBook(book)} className="px-8 py-4 bg-primary text-white rounded-full font-bold shadow-xl flex items-center gap-2 active:scale-95 transition-all">
+                    <span className="material-symbols-outlined fill-1">play_arrow</span> Dinle
+                  </button>
+                  <a
+                    href={book.buyUrl || '#'}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={(e) => { if (!book.buyUrl) e.preventDefault(); }}
+                    className={`px-6 py-4 rounded-full font-bold flex items-center gap-2 transition-all ${book.buyUrl ? 'bg-green-500 text-white shadow-xl active:scale-95' : 'bg-gray-300 text-gray-500 cursor-not-allowed'}`}
+                  >
+                    <span className="material-symbols-outlined">shopping_cart</span> Satın Al
+                  </a>
+                  <a
+                    href={book.pdfUrl || '#'}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={(e) => { if (!book.pdfUrl) e.preventDefault(); }}
+                    className={`px-6 py-4 rounded-full font-bold flex items-center gap-2 transition-all ${book.pdfUrl ? 'bg-orange-500 text-white shadow-xl active:scale-95' : 'bg-gray-300 text-gray-500 cursor-not-allowed'}`}
+                  >
+                    <span className="material-symbols-outlined">menu_book</span> PDF Oku
+                  </a>
+                  {/* İlerlemeyi Sıfırla butonu */}
+                  {userData.progress[book.id] && (
+                    <button
+                      onClick={async () => {
+                        if (window.confirm('Bu kitaptaki ilerlemenizi sıfırlamak istediğinizden emin misiniz?')) {
+                          if (!currentUser) return;
+                          const newProgress = { ...userData.progress };
+                          delete newProgress[book.id];
+                          setUserData(prev => ({ ...prev, progress: newProgress }));
+                          try {
+                            const userDocRef = doc(db, 'users', currentUser.uid);
+                            await setDoc(userDocRef, { progress: newProgress }, { merge: true });
+                          } catch (err) {
+                            console.error('İlerleme sıfırlanamadı:', err);
+                          }
+                        }
+                      }}
+                      className="size-14 rounded-full flex items-center justify-center border-2 border-white/10 hover:border-red-500/50 hover:bg-red-500/10 transition-all text-slate-400 hover:text-red-500"
+                      title="İlerlemeyi Sıfırla"
+                    >
+                      <span className="material-symbols-outlined">restart_alt</span>
+                    </button>
+                  )}
+                </div>
               </div>
               {book.topics && (
                 <div className="glass-panel p-6 rounded-[2.5rem] max-h-[500px] overflow-y-auto no-scrollbar relative">
