@@ -433,6 +433,26 @@ const App: React.FC = () => {
                 }} className={`size-14 rounded-full flex items-center justify-center border-2 transition-all ${isFav ? 'bg-red-500 border-red-500 text-white' : 'border-white/10'}`}>
                   <span className={`material-symbols-outlined ${isFav ? 'fill-1' : ''}`}>favorite</span>
                 </button>
+                {/* İlerlemeyi Sıfırla butonu */}
+                {userData.progress[book.id] && (
+                  <button
+                    onClick={() => {
+                      if (window.confirm('Bu kitaptaki ilerlemenizi sıfırlamak istediğinizden emin misiniz?')) {
+                        if (!currentUser) return;
+                        const newProgress = { ...userData.progress };
+                        delete newProgress[book.id];
+                        setUserData(prev => ({ ...prev, progress: newProgress }));
+                        // Firebase'e kaydet
+                        const userDocRef = doc(db, 'users', currentUser.uid);
+                        setDoc(userDocRef, { progress: newProgress }, { merge: true });
+                      }
+                    }}
+                    className="size-14 rounded-full flex items-center justify-center border-2 border-white/10 hover:border-red-500/50 hover:bg-red-500/10 transition-all text-slate-400 hover:text-red-500"
+                    title="İlerlemeyi Sıfırla"
+                  >
+                    <span className="material-symbols-outlined">restart_alt</span>
+                  </button>
+                )}
               </div>
             </div>
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
