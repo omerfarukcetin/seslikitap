@@ -355,6 +355,7 @@ const App: React.FC = () => {
                 <input className="glass-panel p-3 rounded-xl outline-none" placeholder="Başlık" value={editingBook.title} onChange={e => setEditingBook({ ...editingBook, title: e.target.value })} />
                 <input className="glass-panel p-3 rounded-xl outline-none" placeholder="Yazar" value={editingBook.author} onChange={e => setEditingBook({ ...editingBook, author: e.target.value })} />
                 <input className="glass-panel p-3 rounded-xl outline-none" placeholder="Kapak URL" value={editingBook.coverUrl} onChange={e => setEditingBook({ ...editingBook, coverUrl: e.target.value })} />
+                <input className="glass-panel p-3 rounded-xl outline-none" placeholder="Satın Alma URL (opsiyonel)" value={editingBook.buyUrl || ''} onChange={e => setEditingBook({ ...editingBook, buyUrl: e.target.value })} />
                 <textarea className="glass-panel p-3 rounded-xl outline-none md:col-span-2 h-20" placeholder="Açıklama" value={editingBook.description} onChange={e => setEditingBook({ ...editingBook, description: e.target.value })} />
                 <div className="md:col-span-2">
                   <label className="text-xs font-bold opacity-50 mb-1 block">Bölümler (JSON)</label>
