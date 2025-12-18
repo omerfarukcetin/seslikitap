@@ -526,11 +526,46 @@ const App: React.FC = () => {
         state={playerState}
         onTogglePlay={() => setPlayerState(p => ({ ...p, isPlaying: !p.isPlaying }))}
         onProgressUpdate={onProgressUpdate}
-        onNext={() => { }}
-        onPrev={() => { }}
+        onNext={() => {
+          if (playerState.currentBook && playerState.currentBook.topics) {
+            const nextIndex = playerState.currentTopicIndex + 1;
+            if (nextIndex < playerState.currentBook.topics.length) {
+              setPlayerState(prev => ({
+                ...prev,
+                currentTopicIndex: nextIndex,
+                progress: 0,
+                currentTime: '0:00',
+                isPlaying: true
+              }));
+            }
+          }
+        }}
+        onPrev={() => {
+          if (playerState.currentBook && playerState.currentBook.topics) {
+            const prevIndex = playerState.currentTopicIndex - 1;
+            if (prevIndex >= 0) {
+              setPlayerState(prev => ({
+                ...prev,
+                currentTopicIndex: prevIndex,
+                progress: 0,
+                currentTime: '0:00',
+                isPlaying: true
+              }));
+            }
+          }
+        }}
         onSpeedChange={(s) => {
           setPlayerState(prev => ({ ...prev, playbackSpeed: s }));
           if (currentUser) updatePlaybackSpeedInFirebase(currentUser.uid, s);
+        }}
+        onTopicSelect={(index) => {
+          setPlayerState(prev => ({
+            ...prev,
+            currentTopicIndex: index,
+            progress: 0,
+            currentTime: '0:00',
+            isPlaying: true
+          }));
         }}
       />
     </div>
