@@ -394,16 +394,14 @@ const App: React.FC = () => {
           <span className="material-symbols-outlined">arrow_back</span> Ana Sayfaya Dön
         </button>
         <div className="flex flex-col lg:flex-row gap-8 xl:gap-16 items-start">
-          <div className="w-48 md:w-64 lg:w-72 xl:w-80 shrink-0 mx-auto lg:mx-0">
+          <div className="w-48 md:w-64 lg:w-72 xl:w-80 shrink-0 mx-auto lg:mx-0 space-y-4">
             <img src={book.coverUrl} className="w-full aspect-[1/1.5] object-cover rounded-[2rem] shadow-2xl border border-white/5" alt={book.title} />
+            <div className="text-center lg:text-left space-y-2">
+              <h1 className="text-xl md:text-2xl lg:text-3xl font-black leading-tight">{book.title}</h1>
+              <span className="font-bold opacity-60 text-sm md:text-base block">{book.author}</span>
+            </div>
           </div>
           <div className="flex-1 space-y-10">
-            <div className="space-y-4 text-center lg:text-left">
-              <h1 className="text-3xl md:text-6xl font-black leading-tight">{book.title}</h1>
-              <div className="flex items-center justify-center lg:justify-start gap-4">
-                <span className="font-bold opacity-60 md:text-xl">{book.author}</span>
-              </div>
-            </div>
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
               <div className="glass-panel p-8 rounded-[2.5rem] space-y-6">
                 <h3 className="text-lg font-bold uppercase tracking-widest opacity-50 text-center">Kitap Hakkında</h3>
