@@ -174,13 +174,14 @@ const Player: React.FC<PlayerProps> = ({ state, onTogglePlay, onProgressUpdate, 
           </div>
 
 
+
           {/* Cover & Info - Mobilde yan yana, Web'de ortada resim + altında açıklama */}
-          <div className="flex items-center gap-4 md:flex-col md:items-center md:flex-1 md:justify-center">
+          <div className="flex items-center gap-4 md:flex-col md:items-center md:flex-1 md:justify-center md:px-8">
             <div
-              className="w-20 h-28 md:w-48 md:h-72 rounded-xl md:rounded-2xl bg-cover bg-center shadow-xl md:shadow-2xl border-2 md:border-4 border-slate-200 dark:border-white/10 shrink-0"
+              className="w-20 h-28 md:w-52 md:h-80 rounded-xl md:rounded-3xl bg-cover bg-center shadow-xl md:shadow-2xl border-2 md:border-[6px] border-slate-200 dark:border-white/20 shrink-0"
               style={{ backgroundImage: `url(${state.currentBook.coverUrl})` }}
             />
-            <div className="flex-1 md:text-center space-y-1 md:space-y-3 min-w-0 md:mt-4">
+            <div className="flex-1 md:text-center space-y-1 md:space-y-3 min-w-0 md:mt-6">
               <h2 className="text-sm md:text-xl font-black leading-snug break-words line-clamp-2">{currentTopic?.title || state.currentBook.title}</h2>
               <p className="text-xs md:text-sm opacity-70">{state.currentBook.author}</p>
               <p className="text-[10px] md:text-xs text-primary font-bold">
@@ -188,7 +189,7 @@ const Player: React.FC<PlayerProps> = ({ state, onTogglePlay, onProgressUpdate, 
               </p>
               {/* Kitap açıklaması - sadece web */}
               {state.currentBook.description && (
-                <p className="hidden md:block text-xs opacity-60 leading-relaxed max-h-24 overflow-y-auto mt-4 text-left px-2">
+                <p className="hidden md:block text-sm opacity-70 leading-relaxed max-h-32 overflow-y-auto mt-6 text-left">
                   {state.currentBook.description}
                 </p>
               )}
