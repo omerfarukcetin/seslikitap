@@ -47,14 +47,6 @@ const BookCard: React.FC<BookCardProps> = ({ book, matchedTopics = [], onClick, 
           alt={book.title}
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 flex flex-col items-center justify-center gap-3 backdrop-blur-[2px]">
-          <button
-            onClick={(e) => { e.stopPropagation(); onPlay(book); }}
-            className="size-10 md:size-16 bg-primary text-white rounded-full flex items-center justify-center shadow-[0_10px_20px_rgba(14,165,233,0.4)] transform scale-50 group-hover:scale-100 transition-all duration-300 hover:scale-110 active:scale-95"
-          >
-            <span className="material-symbols-outlined text-xl md:text-4xl">play_arrow</span>
-          </button>
-        </div>
       </div>
 
       <div className="space-y-1 md:space-y-2 px-1 md:px-2 pb-1 md:pb-2">
