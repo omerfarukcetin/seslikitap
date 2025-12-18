@@ -43,13 +43,23 @@ const Player: React.FC<PlayerProps> = ({ state, onTogglePlay, onProgressUpdate, 
   useEffect(() => {
     if (audioRef.current) {
       audioRef.current.playbackRate = state.playbackSpeed;
+    }
+  }, [state.playbackSpeed]);
+
+  // audioSrc veya isPlaying değiştiğinde
+  useEffect(() => {
+    if (audioRef.current && audioSrc) {
+      // Src değişti mi kontrol et
+      if (audioRef.current.src !== audioSrc) {
+        audioRef.current.load();
+      }
       if (state.isPlaying) {
         audioRef.current.play().catch(e => console.error("Audio play error:", e));
       } else {
         audioRef.current.pause();
       }
     }
-  }, [state.isPlaying, audioSrc, state.playbackSpeed]);
+  }, [state.isPlaying, audioSrc]);
 
   useEffect(() => {
     if (audioRef.current && state.progress !== undefined) {
