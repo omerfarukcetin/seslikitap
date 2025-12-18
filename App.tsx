@@ -436,15 +436,20 @@ const App: React.FC = () => {
                 {/* İlerlemeyi Sıfırla butonu */}
                 {userData.progress[book.id] && (
                   <button
-                    onClick={() => {
+                    onClick={async () => {
                       if (window.confirm('Bu kitaptaki ilerlemenizi sıfırlamak istediğinizden emin misiniz?')) {
                         if (!currentUser) return;
                         const newProgress = { ...userData.progress };
                         delete newProgress[book.id];
+                        // Önce lokal state'i güncelle
                         setUserData(prev => ({ ...prev, progress: newProgress }));
                         // Firebase'e kaydet
-                        const userDocRef = doc(db, 'users', currentUser.uid);
-                        setDoc(userDocRef, { progress: newProgress }, { merge: true });
+                        try {
+                          const userDocRef = doc(db, 'users', currentUser.uid);
+                          await setDoc(userDocRef, { progress: newProgress }, { merge: true });
+                        } catch (err) {
+                          console.error('İlerleme sıfırlanamadı:', err);
+                        }
                       }
                     }}
                     className="size-14 rounded-full flex items-center justify-center border-2 border-white/10 hover:border-red-500/50 hover:bg-red-500/10 transition-all text-slate-400 hover:text-red-500"

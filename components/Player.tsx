@@ -46,20 +46,27 @@ const Player: React.FC<PlayerProps> = ({ state, onTogglePlay, onProgressUpdate, 
     }
   }, [state.playbackSpeed]);
 
-  // audioSrc veya isPlaying değiştiğinde
+  // audioSrc değiştiğinde yeni parçayı yükle
   useEffect(() => {
     if (audioRef.current && audioSrc) {
-      // Src değişti mi kontrol et
-      if (audioRef.current.src !== audioSrc) {
-        audioRef.current.load();
+      audioRef.current.src = audioSrc;
+      audioRef.current.load();
+      if (state.isPlaying) {
+        audioRef.current.play().catch(e => console.error("Audio play error:", e));
       }
+    }
+  }, [audioSrc]);
+
+  // isPlaying değiştiğinde play/pause
+  useEffect(() => {
+    if (audioRef.current && audioSrc) {
       if (state.isPlaying) {
         audioRef.current.play().catch(e => console.error("Audio play error:", e));
       } else {
         audioRef.current.pause();
       }
     }
-  }, [state.isPlaying, audioSrc]);
+  }, [state.isPlaying]);
 
   useEffect(() => {
     if (audioRef.current && state.progress !== undefined) {
@@ -119,7 +126,6 @@ const Player: React.FC<PlayerProps> = ({ state, onTogglePlay, onProgressUpdate, 
       <div className="fixed inset-0 z-[100] bg-white dark:bg-slate-900 text-slate-900 dark:text-white flex flex-col md:flex-row animate-fade-in">
         <audio
           ref={audioRef}
-          src={audioSrc}
           onTimeUpdate={handleTimeUpdate}
           onEnded={onNext}
         />
@@ -133,29 +139,29 @@ const Player: React.FC<PlayerProps> = ({ state, onTogglePlay, onProgressUpdate, 
         </button>
 
         {/* Sol taraf - Oynatıcı (web) / Üst kısım (mobil) */}
-        <div className="flex-1 flex flex-col p-4 md:p-8 md:max-w-[50%]">
+        <div className="flex flex-col p-4 md:p-8 md:flex-1 md:max-w-[50%]">
           {/* Header - sadece mobil */}
-          <div className="flex items-center justify-between mb-4 md:hidden">
+          <div className="flex items-center justify-between mb-3 md:hidden">
             <button
               onClick={() => setIsFullscreen(false)}
-              className="size-10 rounded-full bg-slate-200 dark:bg-white/10 flex items-center justify-center"
+              className="size-9 rounded-full bg-slate-200 dark:bg-white/10 flex items-center justify-center"
             >
-              <span className="material-symbols-outlined">keyboard_arrow_down</span>
+              <span className="material-symbols-outlined text-xl">keyboard_arrow_down</span>
             </button>
-            <span className="text-xs font-bold opacity-50 uppercase tracking-widest">Şu an çalıyor</span>
-            <div className="size-10" /> {/* Spacer */}
+            <span className="text-[10px] font-bold opacity-50 uppercase tracking-widest">Şu an çalıyor</span>
+            <div className="size-9" /> {/* Spacer */}
           </div>
 
-          {/* Cover & Info */}
-          <div className="flex flex-col items-center md:items-start flex-1 justify-center">
+          {/* Cover & Info - Mobilde yan yana, Web'de dikey */}
+          <div className="flex items-center gap-4 md:flex-col md:items-start md:flex-1 md:justify-center">
             <div
-              className="w-48 h-72 md:w-64 md:h-96 rounded-2xl bg-cover bg-center shadow-2xl border-4 border-slate-200 dark:border-white/10 mb-6"
+              className="w-20 h-28 md:w-64 md:h-96 rounded-xl md:rounded-2xl bg-cover bg-center shadow-xl md:shadow-2xl border-2 md:border-4 border-slate-200 dark:border-white/10 shrink-0 md:mb-6"
               style={{ backgroundImage: `url(${state.currentBook.coverUrl})` }}
             />
-            <div className="text-center md:text-left space-y-2 max-w-full">
-              <h2 className="text-lg md:text-2xl font-black leading-snug break-words line-clamp-2">{currentTopic?.title || state.currentBook.title}</h2>
-              <p className="text-sm opacity-70">{state.currentBook.author}</p>
-              <p className="text-xs text-primary font-bold">
+            <div className="flex-1 md:text-left space-y-1 md:space-y-2 min-w-0">
+              <h2 className="text-sm md:text-2xl font-black leading-snug break-words line-clamp-2">{currentTopic?.title || state.currentBook.title}</h2>
+              <p className="text-xs md:text-sm opacity-70">{state.currentBook.author}</p>
+              <p className="text-[10px] md:text-xs text-primary font-bold">
                 Bölüm {state.currentTopicIndex + 1} / {topics.length}
               </p>
             </div>
