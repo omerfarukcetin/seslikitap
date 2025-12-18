@@ -51,9 +51,16 @@ const Player: React.FC<PlayerProps> = ({ state, onTogglePlay, onProgressUpdate, 
     if (audioRef.current && audioSrc) {
       const audio = audioRef.current;
 
-      // Yeni parça yüklenince playbackRate'yi ayarlamak için event listener
+      // Yeni parça yüklenince playbackRate ve progress ayarla
       const handleLoadedData = () => {
         audio.playbackRate = state.playbackSpeed;
+
+        // Kayıtlı progress'i uygula (kaldığı dakikadan devam)
+        if (state.progress > 0 && audio.duration && !isNaN(audio.duration)) {
+          const targetTime = (state.progress / 100) * audio.duration;
+          audio.currentTime = targetTime;
+        }
+
         if (state.isPlaying) {
           audio.play().catch(e => console.error("Audio play error:", e));
         }
