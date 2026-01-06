@@ -20,6 +20,7 @@ import {
   updatePlaybackSpeedInFirebase,
   updateUsernameInFirebase,
   createUserProfile,
+  deleteProgressFromFirebase,
   onAuthStateChanged
 } from './firebase';
 
@@ -439,12 +440,21 @@ const App: React.FC = () => {
                       onClick={async () => {
                         if (window.confirm('Bu kitaptaki ilerlemenizi sıfırlamak istediğinizden emin misiniz?')) {
                           if (!currentUser) return;
+
+                          // Önce lokal state'i güncelle
                           const newProgress = { ...userData.progress };
                           delete newProgress[book.id];
                           setUserData(prev => ({ ...prev, progress: newProgress }));
+
+                          // Eğer sıfırlanan kitap şu an çalınan kitapsa, player progress'ini de sıfırla
+                          // Böylece onProgressUpdate tekrar üzerine yazmaz
+                          if (playerState.currentBook?.id === book.id) {
+                            setPlayerState(prev => ({ ...prev, progress: 0 }));
+                          }
+
+                          // Firebase'den sil
                           try {
-                            const userDocRef = doc(db, 'users', currentUser.uid);
-                            await setDoc(userDocRef, { progress: newProgress }, { merge: true });
+                            await deleteProgressFromFirebase(currentUser.uid, book.id);
                           } catch (err) {
                             console.error('İlerleme sıfırlanamadı:', err);
                           }

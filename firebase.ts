@@ -1,6 +1,6 @@
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy, setDoc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy, setDoc, getDoc, updateDoc, deleteField } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
 // Export firestore functions for use in components
@@ -31,10 +31,10 @@ export const createUserProfile = async (userId: string, email: string) => {
   try {
     const snap = await getDoc(userDocRef);
     if (!snap.exists()) {
-      await setDoc(userDocRef, { 
+      await setDoc(userDocRef, {
         username: email.split('@')[0],
-        favorites: [], 
-        progress: {}, 
+        favorites: [],
+        progress: {},
         playbackSpeed: 1,
         createdAt: new Date().toISOString()
       });
@@ -79,6 +79,13 @@ export const updateProgressInFirebase = async (userId: string, bookId: string, p
   const userDocRef = doc(db, "users", userId);
   return updateDoc(userDocRef, {
     [`progress.${bookId}`]: progress
+  });
+};
+
+export const deleteProgressFromFirebase = async (userId: string, bookId: string) => {
+  const userDocRef = doc(db, "users", userId);
+  return updateDoc(userDocRef, {
+    [`progress.${bookId}`]: deleteField()
   });
 };
 
