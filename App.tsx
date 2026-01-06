@@ -191,7 +191,17 @@ const App: React.FC = () => {
         const combined = [...MOCK_BOOKS];
         processedBooks.forEach(safeBook => {
           const idx = combined.findIndex(c => c.id === safeBook.id);
-          if (idx > -1) combined[idx] = safeBook;
+          if (idx > -1) {
+            // Eğer Firebase versiyonunda topics yoksa veya boşsa, MOCK versiyonununkini koru
+            const hasMockTopics = combined[idx].topics && combined[idx].topics.length > 0;
+            const hasFirebaseTopics = safeBook.topics && safeBook.topics.length > 0;
+
+            if (hasMockTopics && !hasFirebaseTopics) {
+              combined[idx] = { ...safeBook, topics: combined[idx].topics };
+            } else {
+              combined[idx] = safeBook;
+            }
+          }
           else combined.push(safeBook);
         });
         return combined;
