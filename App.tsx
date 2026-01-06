@@ -217,11 +217,16 @@ const App: React.FC = () => {
     });
   };
 
-  const handlePlayBook = (book: Book, topicIndex: number = 0) => {
+  const handlePlayBook = (book: Book, topicIndex: number = 0, forcedPercent: number | null = null) => {
     // Eğer topicIndex verilmişse onu kullan, yoksa kayıtlı progress'i kontrol et
     const saved = userData.progress[book.id];
-    const index = topicIndex > 0 ? topicIndex : (saved?.topicIndex || 0);
-    const percent = topicIndex > 0 ? 0 : (saved?.percent || 0);
+
+    // Eğer forcedPercent varsa (onResume'dan geliyorsa) onu kullan, 
+    // yoksa sadece book değiştiyse saved'ı kontrol et
+    const useSaved = forcedPercent !== null || (saved && book.id !== playerState.currentBook?.id);
+
+    const index = topicIndex > 0 ? topicIndex : (useSaved ? (saved?.topicIndex || 0) : 0);
+    const percent = forcedPercent !== null ? forcedPercent : (useSaved ? (saved?.percent || 0) : 0);
 
     setPlayerState({
       currentBook: book,
@@ -542,7 +547,7 @@ const App: React.FC = () => {
                   onResume={() => {
                     const saved = userData.progress[b.id];
                     if (saved) {
-                      handlePlayBook(b, saved.topicIndex);
+                      handlePlayBook(b, saved.topicIndex, saved.percent);
                     } else {
                       handlePlayBook(b);
                     }

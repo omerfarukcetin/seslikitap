@@ -19,6 +19,7 @@ const Player: React.FC<PlayerProps> = ({ state, onTogglePlay, onProgressUpdate, 
   const [volume, setVolume] = useState(1);
   const [showSpeedMenu, setShowSpeedMenu] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
 
   const currentTopic: Topic | undefined = state.currentBook?.topics?.[state.currentTopicIndex];
 
@@ -53,6 +54,7 @@ const Player: React.FC<PlayerProps> = ({ state, onTogglePlay, onProgressUpdate, 
 
       // Yeni parça yüklenince playbackRate ve progress ayarla
       const handleLoadedData = () => {
+        setIsInitialLoading(true);
         audio.playbackRate = state.playbackSpeed;
 
         // Kayıtlı progress'i uygula (kaldığı dakikadan devam)
@@ -61,9 +63,13 @@ const Player: React.FC<PlayerProps> = ({ state, onTogglePlay, onProgressUpdate, 
           audio.currentTime = targetTime;
         }
 
-        if (state.isPlaying) {
-          audio.play().catch(e => console.error("Audio play error:", e));
-        }
+        // Kısa bir gecikme ile loading'i kapat ki timeUpdate sıfır göndermesin
+        setTimeout(() => {
+          setIsInitialLoading(false);
+          if (state.isPlaying) {
+            audio.play().catch(e => console.error("Audio play error:", e));
+          }
+        }, 100);
       };
 
       audio.addEventListener('loadeddata', handleLoadedData, { once: true });
@@ -114,6 +120,8 @@ const Player: React.FC<PlayerProps> = ({ state, onTogglePlay, onProgressUpdate, 
   }, [isFullscreen]);
 
   const handleTimeUpdate = () => {
+    if (isInitialLoading) return; // İlk yükleme sırasında progress güncelleme
+
     if (audioRef.current && audioRef.current.duration) {
       const progress = (audioRef.current.currentTime / audioRef.current.duration) * 100;
       onProgressUpdate(progress, audioRef.current.currentTime, audioRef.current.duration);
