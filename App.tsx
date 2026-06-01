@@ -58,6 +58,7 @@ const App: React.FC = () => {
   const [isAdminPanel, setIsAdminPanel] = useState(false);
   const [selectedBook, setSelectedBook] = useState<Book | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [sortBy, setSortBy] = useState<'order' | 'title-asc' | 'title-desc' | 'newest' | 'oldest'>('order');
 
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
@@ -175,7 +176,8 @@ const App: React.FC = () => {
           duration: fb.duration || '',
           rating: fb.rating || 0,
           reviewsCount: fb.reviewsCount || 0,
-          topics: Array.isArray(fb.topics) ? fb.topics : []
+          topics: Array.isArray(fb.topics) ? fb.topics : [],
+          order: fb.order !== undefined && fb.order !== null ? Number(fb.order) : undefined
         } as Book;
         processedBooks.push(safeBook);
       });
@@ -303,15 +305,47 @@ const App: React.FC = () => {
     setSearchQuery('');
   };
 
-  const filteredBooks = useMemo(() => {
+  const sortedAndFilteredBooks = useMemo(() => {
     const q = searchQuery.toLocaleLowerCase('tr-TR').trim();
-    if (!q) return books;
-    return books.filter(b =>
-      b.title.toLocaleLowerCase('tr-TR').includes(q) ||
-      (b.author || '').toLocaleLowerCase('tr-TR').includes(q) ||
-      b.topics?.some(t => t.title.toLocaleLowerCase('tr-TR').includes(q))
-    );
-  }, [books, searchQuery]);
+    let result = [...books];
+    if (q) {
+      result = result.filter(b =>
+        b.title.toLocaleLowerCase('tr-TR').includes(q) ||
+        (b.author || '').toLocaleLowerCase('tr-TR').includes(q) ||
+        b.topics?.some(t => t.title.toLocaleLowerCase('tr-TR').includes(q))
+      );
+    }
+    return result.sort((a, b) => {
+      if (sortBy === 'order') {
+        const orderA = a.order !== undefined && a.order !== null ? Number(a.order) : 999999;
+        const orderB = b.order !== undefined && b.order !== null ? Number(b.order) : 999999;
+        if (orderA !== orderB) {
+          return orderA - orderB;
+        }
+        // Fallback: En yeni eklenen en üstte
+        const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+        const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+        return dateB - dateA;
+      }
+      if (sortBy === 'title-asc') {
+        return a.title.localeCompare(b.title, 'tr');
+      }
+      if (sortBy === 'title-desc') {
+        return b.title.localeCompare(a.title, 'tr');
+      }
+      if (sortBy === 'newest') {
+        const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+        const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+        return dateB - dateA;
+      }
+      if (sortBy === 'oldest') {
+        const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+        const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+        return dateA - dateB;
+      }
+      return 0;
+    });
+  }, [books, searchQuery, sortBy]);
 
   const renderAdmin = () => {
     if (!isAdminAuthenticated) {
@@ -374,6 +408,13 @@ const App: React.FC = () => {
                 <input className="glass-panel p-3 rounded-xl outline-none" placeholder="Kapak URL" value={editingBook.coverUrl} onChange={e => setEditingBook({ ...editingBook, coverUrl: e.target.value })} />
                 <input className="glass-panel p-3 rounded-xl outline-none" placeholder="Satın Alma URL (opsiyonel)" value={editingBook.buyUrl || ''} onChange={e => setEditingBook({ ...editingBook, buyUrl: e.target.value })} />
                 <input className="glass-panel p-3 rounded-xl outline-none" placeholder="PDF Adresi (opsiyonel)" value={editingBook.pdfUrl || ''} onChange={e => setEditingBook({ ...editingBook, pdfUrl: e.target.value })} />
+                <input 
+                  type="number" 
+                  className="glass-panel p-3 rounded-xl outline-none md:col-span-2" 
+                  placeholder="Görüntüleme Sırası (İsteğe bağlı, küçük sayı önce gelir. Örn: 1, 2, 3)" 
+                  value={editingBook.order !== undefined && editingBook.order !== null ? editingBook.order : ''} 
+                  onChange={e => setEditingBook({ ...editingBook, order: e.target.value ? parseInt(e.target.value, 10) : undefined })} 
+                />
                 <textarea className="glass-panel p-3 rounded-xl outline-none md:col-span-2 h-20" placeholder="Açıklama" value={editingBook.description} onChange={e => setEditingBook({ ...editingBook, description: e.target.value })} />
                 <div className="md:col-span-2">
                   <label className="text-xs font-bold opacity-50 mb-1 block">Bölümler (JSON)</label>
@@ -388,7 +429,12 @@ const App: React.FC = () => {
               <button onClick={async () => {
                 try {
                   const parsedTopics = JSON.parse(topicsJson);
-                  const bookToSave = { ...editingBook, topics: parsedTopics, createdAt: editingBook.createdAt || new Date().toISOString() };
+                  const bookToSave = { 
+                    ...editingBook, 
+                    topics: parsedTopics, 
+                    createdAt: editingBook.createdAt || new Date().toISOString(),
+                    order: editingBook.order !== undefined && editingBook.order !== null && !isNaN(editingBook.order) ? Number(editingBook.order) : null
+                  };
                   await setDoc(doc(db, "books", editingBook.id!), bookToSave, { merge: true });
                   setEditingBook(null);
                   setTopicsJson('');
@@ -552,12 +598,29 @@ const App: React.FC = () => {
       <main className="flex-1 overflow-y-auto no-scrollbar">
         {isAdminPanel ? renderAdmin() : selectedBook ? renderDetail(selectedBook) : (
           <div className="px-4 md:px-12 py-6 space-y-10 pb-52 max-w-[1800px] mx-auto animate-fade-in">
-            <div className="flex items-baseline gap-4">
-              <h2 className="text-2xl md:text-5xl font-black tracking-tight">{searchQuery ? 'Arama Sonuçları' : 'Tüm Kitaplar'}</h2>
-              <span className="opacity-40 font-bold text-sm md:text-lg">({filteredBooks.length})</span>
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/5 pb-6">
+              <div className="flex items-baseline gap-4">
+                <h2 className="text-2xl md:text-5xl font-black tracking-tight">{searchQuery ? 'Arama Sonuçları' : 'Tüm Kitaplar'}</h2>
+                <span className="opacity-40 font-bold text-sm md:text-lg">({sortedAndFilteredBooks.length})</span>
+              </div>
+              
+              <div className="flex items-center gap-3 glass-panel px-4 py-2 rounded-2xl w-fit">
+                <span className="material-symbols-outlined text-xl opacity-60">sort</span>
+                <select
+                  value={sortBy}
+                  onChange={e => setSortBy(e.target.value as any)}
+                  className="bg-transparent border-none outline-none text-sm font-bold pr-8 cursor-pointer focus:ring-0 text-slate-800 dark:text-white"
+                >
+                  <option value="order" className="bg-slate-800 text-slate-100 dark:bg-slate-900 dark:text-white font-medium">Özel Sıralama (Yönetici)</option>
+                  <option value="title-asc" className="bg-slate-800 text-slate-100 dark:bg-slate-900 dark:text-white font-medium">A - Z (Başlık)</option>
+                  <option value="title-desc" className="bg-slate-800 text-slate-100 dark:bg-slate-900 dark:text-white font-medium">Z - A (Başlık)</option>
+                  <option value="newest" className="bg-slate-800 text-slate-100 dark:bg-slate-900 dark:text-white font-medium">En Yeni (Eklenme)</option>
+                  <option value="oldest" className="bg-slate-800 text-slate-100 dark:bg-slate-900 dark:text-white font-medium">En Eski (Eklenme)</option>
+                </select>
+              </div>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-10">
-              {filteredBooks.map(b => (
+              {sortedAndFilteredBooks.map(b => (
                 <BookCard
                   key={b.id}
                   book={b}

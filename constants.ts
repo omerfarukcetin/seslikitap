@@ -121,7 +121,8 @@ export const MOCK_BOOKS: Book[] = [
       { id: '96 Muhammed aleyhisselâmın güzel ahlâkı', title: '96 Muhammed aleyhisselâmın güzel ahlâkı', audio: 'Tam_İlmihal/Tam_İlmihal_1_Kisim/96 Muhammed aleyhisselâmın güzel ahlâkı.mp3' },
       { id: '97 Resûlullahın silsilesi', title: '97 Resûlullahın ana baba ve bütün dedeleri hep mü’min sâlih idi.mp3', audio: 'Tam_İlmihal/Tam_İlmihal_1_Kisim/97 Resûlullahın ana baba ve bütün dedeleri hep mü’min_ sâlih idi.mp3' },
       { id: '98 Sübhâne rabbike', title: '98 Sübhâne rabbike âyet-i kerîmesi nasıl okunur', audio: 'Tam_İlmihal/Tam_İlmihal_1_Kisim/98 Sübhâne rabbike âyet-i kerîmesi nasıl okunur.mp3' },
-    ]
+    ],
+    order: 10
   },
   {
     id: 'tam-ilmihal-2',
@@ -211,6 +212,7 @@ export const MOCK_BOOKS: Book[] = [
       { id: '72_85.Mektub', title: '72_85.Mektub', audio: 'https://www.hakikatkitabevi.com/turkce/Kitaplar/Tam_Ilmihal/2_Kisim/72_85.Mektub.mp3' },
       { id: '73_88.Mektub', title: '73_88.Mektub', audio: 'https://www.hakikatkitabevi.com/turkce/Kitaplar/Tam_Ilmihal/2_Kisim/73_88.Mektub.mp3' },
     ],
+    order: 20
   },
   {
     id: 'tam-ilmihal-3',
@@ -303,7 +305,8 @@ export const MOCK_BOOKS: Book[] = [
       { id: '72_Cok_Muhim_Ilave', title: '72_Cok_Muhim_Ilave', audio: 'https://www.hakikatkitabevi.com/turkce/Kitaplar/Tam_Ilmihal/3_Kisim/72_Cok_Muhim_Ilave.mp3' },
       { id: '73_Arka_Kapak_Ici', title: '73_Arka_Kapak_Ici', audio: 'https://www.hakikatkitabevi.com/turkce/Kitaplar/Tam_Ilmihal/3_Kisim/73_Arka_Kapak_Ici.mp3' },
       { id: '74_Bir_Alim_Kitab_Yazarsa', title: '74_Bir_Alim_Kitab_Yazarsa', audio: 'https://www.hakikatkitabevi.com/turkce/Kitaplar/Tam_Ilmihal/3_Kisim/74_Bir_Alim_Kitab_Yazarsa.mp3' }
-    ]
+    ],
+    order: 30
   },
   {
     id: 'mektubat',
@@ -642,7 +645,8 @@ export const MOCK_BOOKS: Book[] = [
       { id: '314_B_Ikinci_Ariza', title: '314_B_Ikinci_Ariza', audio: 'https://www.hakikatkitabevi.com/turkce/Kitaplar/Mektubat_Tercemesi/314_B_Ikinci_Ariza.mp3' },
       { id: '314_C_Ucuncu_Ariza', title: '314_C_Ucuncu_Ariza', audio: 'https://www.hakikatkitabevi.com/turkce/Kitaplar/Mektubat_Tercemesi/314_C_Ucuncu_Ariza.mp3' },
       { id: '314_D_Son_Sahife', title: '314_D_Son_Sahife', audio: 'https://www.hakikatkitabevi.com/turkce/Kitaplar/Mektubat_Tercemesi/314_D_Son_Sahife.mp3' }
-    ]
+    ],
+    order: 40
   },
   {
     id: 'faideli-bilgiler',
@@ -683,8 +687,8 @@ export const MOCK_BOOKS: Book[] = [
       { id: '23_96.Mektub', title: '23 96.Mektub', audio: 'https://www.hakikatkitabevi.com/turkce/Kitaplar/1_Faideli_Bilgiler/23_96.Mektub.mp3' },
       { id: '24_Buyuk_Alimler', title: '24 Buyuk Alimler', audio: 'https://www.hakikatkitabevi.com/turkce/Kitaplar/1_Faideli_Bilgiler/24_Buyuk_Alimler.mp3' },
       { id: '25_Arka_Kapak_Ici', title: '25 Arka Kapak Ici', audio: 'https://www.hakikatkitabevi.com/turkce/Kitaplar/1_Faideli_Bilgiler/25_Arka_Kapak_Ici.mp3' },
-
-    ]
+    ],
+    order: 50
   },
   {
     id: 'hak-sozun-vesikalari',
@@ -764,7 +768,8 @@ export const MOCK_BOOKS: Book[] = [
       { "audio": "https://www.hakikatkitabevi.com/turkce/Kitaplar/2_Hak_Sozun_Vesikalari/61_Istigfar_Duasi.mp3", "title": "61 İstigfar Duası", "id": "61 İstigfar Duası" },
       { "audio": "https://www.hakikatkitabevi.com/turkce/Kitaplar/2_Hak_Sozun_Vesikalari/62_Tevhid_Duasi.mp3", "title": "62 Tevhid Duası", "id": "62 Tevhid Duası" },
       { "audio": "https://www.hakikatkitabevi.com/turkce/Kitaplar/2_Hak_Sozun_Vesikalari/63_Arka_Kapak_Ici.mp3", "title": "63 Arka Kapak İçi", "id": "63 Arka Kapak İçi" }
-    ]
+    ],
+    order: 60
   },
   {
     id: 'herkese-lazim-olan-iman',
@@ -817,7 +822,8 @@ export const MOCK_BOOKS: Book[] = [
       { id: '34_Sonsoz', title: '34_Sonsoz', audio: 'https://www.hakikatkitabevi.com/turkce/Kitaplar/3_Herkese_Lazim_Olan_Iman/34_Sonsoz.mp3' },
       { id: '35_Hakiki_Musliman_Nasil_Olur', title: '35_Hakiki_Musliman_Nasil_Olur', audio: 'https://www.hakikatkitabevi.com/turkce/Kitaplar/3_Herkese_Lazim_Olan_Iman/35_Hakiki_Musliman_Nasil_Olur.mp3' },
       { id: '36_Arka_Kapak_Ici', title: '36_Arka_Kapak_Ici', audio: 'https://www.hakikatkitabevi.com/turkce/Kitaplar/3_Herkese_Lazim_Olan_Iman/36_Arka_Kapak_Ici.mp3' },
-    ]
+    ],
+    order: 70
   },
 
 ];

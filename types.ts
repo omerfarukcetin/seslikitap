@@ -33,6 +33,7 @@ export interface Book {
   updatedAt?: string;
   buyUrl?: string;
   pdfUrl?: string;
+  order?: number;
 }
 
 export interface PlayerState {
