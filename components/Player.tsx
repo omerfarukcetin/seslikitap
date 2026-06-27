@@ -259,7 +259,7 @@ const Player: React.FC<PlayerProps> = ({ state, onTogglePlay, onProgressUpdate, 
                 <span className="material-symbols-outlined text-3xl md:text-4xl">skip_previous</span>
               </button>
               <button onClick={() => handleSkip(-15)} className="opacity-60 hover:opacity-100 active:text-primary transition-colors" title="15 Saniye Geri">
-                <span className="material-symbols-outlined text-3xl md:text-4xl">replay_15</span>
+                <span className="material-symbols-outlined text-3xl md:text-4xl">replay</span>
               </button>
               <button
                 onClick={onTogglePlay}
@@ -270,7 +270,7 @@ const Player: React.FC<PlayerProps> = ({ state, onTogglePlay, onProgressUpdate, 
                 </span>
               </button>
               <button onClick={() => handleSkip(15)} className="opacity-60 hover:opacity-100 active:text-primary transition-colors" title="15 Saniye İleri">
-                <span className="material-symbols-outlined text-3xl md:text-4xl">forward_15</span>
+                <span className="material-symbols-outlined text-3xl md:text-4xl">redo</span>
               </button>
               <button onClick={onNext} className="opacity-60 hover:opacity-100 active:text-primary transition-colors" title="Sonraki Bölüm">
                 <span className="material-symbols-outlined text-3xl md:text-4xl">skip_next</span>
@@ -370,7 +370,7 @@ const Player: React.FC<PlayerProps> = ({ state, onTogglePlay, onProgressUpdate, 
         {/* Mobile Controls */}
         <div className="flex items-center gap-0.5 md:hidden shrink-0">
           <button onClick={(e) => { e.stopPropagation(); handleSkip(-15); }} className="p-2 text-slate-400 active:text-primary" title="15 Saniye Geri">
-            <span className="material-symbols-outlined text-2xl">replay_15</span>
+            <span className="material-symbols-outlined text-2xl">replay</span>
           </button>
           <button
             onClick={(e) => { e.stopPropagation(); onTogglePlay(); }}
@@ -381,7 +381,7 @@ const Player: React.FC<PlayerProps> = ({ state, onTogglePlay, onProgressUpdate, 
             </span>
           </button>
           <button onClick={(e) => { e.stopPropagation(); handleSkip(15); }} className="p-2 text-slate-400 active:text-primary" title="15 Saniye İleri">
-            <span className="material-symbols-outlined text-2xl">forward_15</span>
+            <span className="material-symbols-outlined text-2xl">redo</span>
           </button>
         </div>
       </div>
@@ -393,7 +393,7 @@ const Player: React.FC<PlayerProps> = ({ state, onTogglePlay, onProgressUpdate, 
             <span className="material-symbols-outlined text-3xl">skip_previous</span>
           </button>
           <button onClick={() => handleSkip(-15)} className="text-slate-400 hover:text-primary transition-colors transform hover:scale-125 active:scale-90" title="15 Saniye Geri">
-            <span className="material-symbols-outlined text-3xl">replay_15</span>
+            <span className="material-symbols-outlined text-3xl">replay</span>
           </button>
           <button
             onClick={onTogglePlay}
@@ -404,7 +404,7 @@ const Player: React.FC<PlayerProps> = ({ state, onTogglePlay, onProgressUpdate, 
             </span>
           </button>
           <button onClick={() => handleSkip(15)} className="text-slate-400 hover:text-primary transition-colors transform hover:scale-125 active:scale-90" title="15 Saniye İleri">
-            <span className="material-symbols-outlined text-3xl">forward_15</span>
+            <span className="material-symbols-outlined text-3xl">redo</span>
           </button>
           <button onClick={onNext} className="text-slate-400 hover:text-primary transition-colors transform hover:scale-125 active:scale-90" title="Sonraki Bölüm">
             <span className="material-symbols-outlined text-3xl">skip_next</span>
