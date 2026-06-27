@@ -149,6 +149,18 @@ const Player: React.FC<PlayerProps> = ({ state, onTogglePlay, onProgressUpdate, 
     }
   };
 
+  const handleSkip = (seconds: number) => {
+    if (audioRef.current) {
+      let targetTime = audioRef.current.currentTime + seconds;
+      if (targetTime < 0) targetTime = 0;
+      if (audioRef.current.duration && targetTime > audioRef.current.duration) {
+        targetTime = audioRef.current.duration;
+      }
+      audioRef.current.currentTime = targetTime;
+      handleTimeUpdate();
+    }
+  };
+
   // Tam Ekran Player
   if (isFullscreen) {
     return (
@@ -243,8 +255,11 @@ const Player: React.FC<PlayerProps> = ({ state, onTogglePlay, onProgressUpdate, 
 
             {/* Playback Controls with Speed */}
             <div className="flex items-center justify-center gap-4 md:gap-6">
-              <button onClick={onPrev} className="opacity-60 hover:opacity-100 active:text-primary transition-colors">
+              <button onClick={onPrev} className="opacity-60 hover:opacity-100 active:text-primary transition-colors" title="Önceki Bölüm">
                 <span className="material-symbols-outlined text-3xl md:text-4xl">skip_previous</span>
+              </button>
+              <button onClick={() => handleSkip(-15)} className="opacity-60 hover:opacity-100 active:text-primary transition-colors" title="15 Saniye Geri">
+                <span className="material-symbols-outlined text-3xl md:text-4xl">replay_15</span>
               </button>
               <button
                 onClick={onTogglePlay}
@@ -254,7 +269,10 @@ const Player: React.FC<PlayerProps> = ({ state, onTogglePlay, onProgressUpdate, 
                   {state.isPlaying ? 'pause' : 'play_arrow'}
                 </span>
               </button>
-              <button onClick={onNext} className="opacity-60 hover:opacity-100 active:text-primary transition-colors">
+              <button onClick={() => handleSkip(15)} className="opacity-60 hover:opacity-100 active:text-primary transition-colors" title="15 Saniye İleri">
+                <span className="material-symbols-outlined text-3xl md:text-4xl">forward_15</span>
+              </button>
+              <button onClick={onNext} className="opacity-60 hover:opacity-100 active:text-primary transition-colors" title="Sonraki Bölüm">
                 <span className="material-symbols-outlined text-3xl md:text-4xl">skip_next</span>
               </button>
               <div className="relative">
@@ -350,20 +368,20 @@ const Player: React.FC<PlayerProps> = ({ state, onTogglePlay, onProgressUpdate, 
         </button>
 
         {/* Mobile Controls */}
-        <div className="flex items-center gap-1 md:hidden shrink-0">
-          <button onClick={(e) => { e.stopPropagation(); onPrev(); }} className="p-2 text-slate-400 active:text-primary">
-            <span className="material-symbols-outlined text-2xl">skip_previous</span>
+        <div className="flex items-center gap-0.5 md:hidden shrink-0">
+          <button onClick={(e) => { e.stopPropagation(); handleSkip(-15); }} className="p-2 text-slate-400 active:text-primary" title="15 Saniye Geri">
+            <span className="material-symbols-outlined text-2xl">replay_15</span>
           </button>
           <button
             onClick={(e) => { e.stopPropagation(); onTogglePlay(); }}
-            className="size-11 rounded-full bg-primary flex items-center justify-center text-white shadow-lg active:scale-90"
+            className="size-11 rounded-full bg-primary flex items-center justify-center text-white shadow-lg active:scale-90 mx-1"
           >
             <span className="material-symbols-outlined text-3xl fill-1">
               {state.isPlaying ? 'pause' : 'play_arrow'}
             </span>
           </button>
-          <button onClick={(e) => { e.stopPropagation(); onNext(); }} className="p-2 text-slate-400 active:text-primary">
-            <span className="material-symbols-outlined text-2xl">skip_next</span>
+          <button onClick={(e) => { e.stopPropagation(); handleSkip(15); }} className="p-2 text-slate-400 active:text-primary" title="15 Saniye İleri">
+            <span className="material-symbols-outlined text-2xl">forward_15</span>
           </button>
         </div>
       </div>
@@ -371,8 +389,11 @@ const Player: React.FC<PlayerProps> = ({ state, onTogglePlay, onProgressUpdate, 
       {/* Progress & Desktop Controls */}
       <div className="hidden md:flex flex-col items-center flex-[1.5] px-12 gap-2">
         <div className="flex items-center gap-8">
-          <button onClick={onPrev} className="text-slate-400 hover:text-primary transition-colors transform hover:scale-125 active:scale-90">
+          <button onClick={onPrev} className="text-slate-400 hover:text-primary transition-colors transform hover:scale-125 active:scale-90" title="Önceki Bölüm">
             <span className="material-symbols-outlined text-3xl">skip_previous</span>
+          </button>
+          <button onClick={() => handleSkip(-15)} className="text-slate-400 hover:text-primary transition-colors transform hover:scale-125 active:scale-90" title="15 Saniye Geri">
+            <span className="material-symbols-outlined text-3xl">replay_15</span>
           </button>
           <button
             onClick={onTogglePlay}
@@ -382,7 +403,10 @@ const Player: React.FC<PlayerProps> = ({ state, onTogglePlay, onProgressUpdate, 
               {state.isPlaying ? 'pause' : 'play_arrow'}
             </span>
           </button>
-          <button onClick={onNext} className="text-slate-400 hover:text-primary transition-colors transform hover:scale-125 active:scale-90">
+          <button onClick={() => handleSkip(15)} className="text-slate-400 hover:text-primary transition-colors transform hover:scale-125 active:scale-90" title="15 Saniye İleri">
+            <span className="material-symbols-outlined text-3xl">forward_15</span>
+          </button>
+          <button onClick={onNext} className="text-slate-400 hover:text-primary transition-colors transform hover:scale-125 active:scale-90" title="Sonraki Bölüm">
             <span className="material-symbols-outlined text-3xl">skip_next</span>
           </button>
         </div>
